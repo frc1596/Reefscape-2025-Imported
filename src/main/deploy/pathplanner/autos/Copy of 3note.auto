@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.45,
+      "y": 5.5
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterAim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterShoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "index"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MP1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MP2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle to left note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MTLNP2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left to right note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left to right p2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "go deep"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

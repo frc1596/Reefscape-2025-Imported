@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.67,
+      "y": 6.8
+    },
+    "rotation": -120.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterAim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "index"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left start"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left note P2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "index"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left to middle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left to middle P2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "index"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle to left "
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "middle to left P2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "index"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
