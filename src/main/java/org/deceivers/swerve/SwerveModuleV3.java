@@ -5,10 +5,10 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 
@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModuleV3 implements SwerveModule {
 
-    private final CANSparkMax mAzimuthMotor;
-    private final CANSparkMax mDriveMotor;
+    private final SparkMax mAzimuthMotor;
+    private final SparkMax mDriveMotor;
 
 
     private final CANcoder mAzimuthAbsoluteEncoder;
@@ -39,7 +39,7 @@ public class SwerveModuleV3 implements SwerveModule {
 
     // need to update the speed to m/s
 
-    public SwerveModuleV3(CANSparkMax azimuthMotor, CANSparkMax driveMotor,
+    public SwerveModuleV3(SparkMax azimuthMotor, SparkMax driveMotor,
             Translation2d location, String name, CANcoder azimuthEncoder) {
             
         mDriveMotor = driveMotor;
