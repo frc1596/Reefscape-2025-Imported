@@ -6,11 +6,13 @@ import com.ctre.phoenix6.hardware.CANcoder;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
+//import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.*;
+//import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,8 +32,8 @@ public class SwerveModuleV3 implements SwerveModule {
 
     private final RelativeEncoder mAzimuthIncrementalEncoder;
     private final RelativeEncoder mDriveEncoder;
-    private final SparkPIDController mDrivePID;
-    private final SparkPIDController mAzimuthPID;
+    private final SparkClosedLoopController mDrivePID;
+    private final SparkClosedLoopController mAzimuthPID;
     private final Translation2d mLocation;
     private final String mName;
 
@@ -48,8 +50,9 @@ public class SwerveModuleV3 implements SwerveModule {
         mName = name;
 
         // Rest motors to factory defaults to ensure correct parameters
-        mDriveMotor.restoreFactoryDefaults();
-        mAzimuthMotor.restoreFactoryDefaults();
+       // mDriveMotor.restoreFactoryDefaults();
+      // mDriveMotor.configure(new SparkMaxConfig(), ResetMode.kResetSafeParameters)
+       // mAzimuthMotor.restoreFactoryDefaults(); 
 
         // Get encoders
         mAzimuthAbsoluteEncoder = azimuthEncoder;
@@ -57,8 +60,8 @@ public class SwerveModuleV3 implements SwerveModule {
         mDriveEncoder = mDriveMotor.getEncoder();
 
         // Get PIDs
-        mDrivePID = mDriveMotor.getPIDController();
-        mAzimuthPID = mAzimuthMotor.getPIDController();
+        mDrivePID = mDriveMotor.getClosedLoopController();
+        mAzimuthPID = mAzimuthMotor.getClosedLoopController();
 
         // Configure drive motor controller parameters
         mDriveMotor.setInverted(true);

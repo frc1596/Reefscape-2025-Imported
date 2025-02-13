@@ -15,8 +15,8 @@ import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.*;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -34,15 +34,15 @@ import edu.wpi.first.wpilibj.SPI;
  * Basic simulation of a swerve subsystem with the methods needed by PathPlanner
  */
 public class SwerveSubsystem extends SubsystemBase {
-  private final CANSparkMax mDriveMotor1 = new CANSparkMax(1, MotorType.kBrushless);
-  private final CANSparkMax mDriveMotor2 = new CANSparkMax(3, MotorType.kBrushless);
-  private final CANSparkMax mDriveMotor3 = new CANSparkMax(5, MotorType.kBrushless);
-  private final CANSparkMax mDriveMotor4 = new CANSparkMax(7, MotorType.kBrushless);
+  private final SparkMax mDriveMotor1 = new SparkMax(1, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax mDriveMotor2 = new SparkMax(3, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax mDriveMotor3 = new SparkMax(5, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax mDriveMotor4 = new SparkMax(7, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
 
-  private final CANSparkMax mAzimuth1 = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax mAzimuth2 = new CANSparkMax(4, MotorType.kBrushless);
-  private final CANSparkMax mAzimuth3 = new CANSparkMax(6, MotorType.kBrushless);
-  private final CANSparkMax mAzimuth4 = new CANSparkMax(8, MotorType.kBrushless);
+  private final SparkMax mAzimuth1 = new SparkMax(2, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax mAzimuth2 = new SparkMax(4, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax mAzimuth3 = new SparkMax(6, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax mAzimuth4 = new SparkMax(8, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
   private final CANcoder mAzimuthEncoder1 = new CANcoder(9); //12 is front right
   private final CANcoder mAzimuthEncoder2 = new CANcoder(10); //11 is front left
   private final CANcoder mAzimuthEncoder3 = new CANcoder(11);  //10 is back right

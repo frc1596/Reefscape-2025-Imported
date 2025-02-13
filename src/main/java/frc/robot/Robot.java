@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -30,10 +30,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakePivotCommand;
 import frc.robot.commands.ShooterPivotCommand;
-import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.ShooterPivotSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 /**
