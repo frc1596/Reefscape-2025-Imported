@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
     // NamedCommands.registerCommand("shooterprime", shooter.shooterlimelightindex());
     // NamedCommands.registerCommand("NotShootShoot", shooter.shooterNotGo());
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    //autoChooser = AutoBuilder.buildAutoChooser();
 
     //UsbCamera camera = CameraServer.startAutomaticCapture();
     //camera.setResolution(160,120);
@@ -103,8 +103,8 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-        SmartDashboard.putString("Selected Auto:" , autoChooser.getSelected().getName());
+   // SmartDashboard.putData("Auto Chooser", autoChooser);
+        //SmartDashboard.putString("Selected Auto:" , autoChooser.getSelected().getName());
 
     CommandScheduler.getInstance().run();
   }

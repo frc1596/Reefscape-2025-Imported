@@ -75,7 +75,7 @@ public class SwerveModuleV3 implements SwerveModule {
     driveConfig.closedLoop
     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
     .pid(1.0, 0.0, 0.0)
-    .velocityFF(0.3);
+    .velocityFF(0.0);
     
     
 mDriveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -90,7 +90,9 @@ azimuthConfig.encoder
 .velocityConversionFactor(1);
 azimuthConfig.closedLoop
 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-.pid(1.0, 0.0, 0.0);
+.pid(0.05, 0.0, 0.0)
+.positionWrappingMaxInput(360)
+.positionWrappingMinInput(0);
 
 
 mDriveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
