@@ -11,6 +11,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Compressor;
@@ -27,7 +28,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommand;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 //import frc.robot.commands.IntakePivotCommand;
 //import frc.robot.commands.ShooterPivotCommand;
 import frc.robot.subsystems.LED;
@@ -43,10 +48,13 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final SwerveSubsystem swerve = new SwerveSubsystem();
+  private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+  private final IntakeSubsystem intakeSystem = new IntakeSubsystem();
   // private final IntakePivotSubsystem intake = new IntakePivotSubsystem();
   // private final ShooterPivotSubsystem shooter = new ShooterPivotSubsystem();
   XboxController driverController = new XboxController(0);
-  XboxController operaterController = new XboxController(1);
+  CommandXboxController operatorController = new CommandXboxController(1);
+
   // private final Compressor mCompressor = new Compressor(PneumaticsModuleType.CTREPCM);
   // private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1,0 );
   // Limelight limelight = new Limelight();
@@ -65,6 +73,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+
+    configureButtonBindings();
+
     // NamedCommands.registerCommand("Intake", intake.intakeNote());
     // NamedCommands.registerCommand("Intake up", intake.intakeUp());
     // NamedCommands.registerCommand("Stop Intake", intake.stopthestupidinatkething());
@@ -84,6 +95,7 @@ public class Robot extends TimedRobot {
 
     //UsbCamera camera = CameraServer.startAutomaticCapture();
     //camera.setResolution(160,120);
+
 
 
   
@@ -152,12 +164,14 @@ public class Robot extends TimedRobot {
 
 
     // m_doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
-    swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operaterController));
+    swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController));
     // intake.setDefaultCommand(new IntakePivotCommand(intake, operaterController));
     // shooter.setDefaultCommand(new ShooterPivotCommand(shooter, operaterController, limelight));
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+
   }
 
   /** This function is called periodically during operator control. */
@@ -215,5 +229,47 @@ public class Robot extends TimedRobot {
 
     return autoChooser.getSelected();
   }
+
+  public void configureButtonBindings(){
+    // Triggers 
+    // placing coral 
+    Trigger elevatorLevelFour = operatorController.y();
+    Trigger elevatorLevelThree = operatorController.x();
+    Trigger elevatorLevelTwo = operatorController.b();
+    Trigger elevatorLevelOne = operatorController.a();
+    Trigger elevatorDown = operatorController.povDown();
+
+    //intake and out 
+    Trigger intake = operatorController.rightBumper();
+    Trigger intakeOut = operatorController.leftBumper();
+
+    // harvesting algae 
+    Trigger algaeGroundIntake = operatorController.povLeft().and(operatorController.a()); 
+    Trigger algaeLevelOneIntake =  operatorController.povLeft().and(operatorController.b()); 
+    Trigger algaeLevelTwoIntake = operatorController.povLeft().and(operatorController.x());
+
+    //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
+    
+    // Bindings 
+    //coral 
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakeSystem.intakePivot(10)));
+    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).andThen(intakeSystem.intakePivot(20)));
+    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).andThen(intakeSystem.intakePivot(30)));
+    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).andThen(intakeSystem.intakePivot(40)));
+    elevatorDown.whileTrue(elevator.elevatorDown());
+
+    // algae 
+    algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakeSystem.intakePivot(10)));
+    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakeSystem.intakePivot(20)));
+    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakeSystem.intakePivot(30)));
+
+
+    // intake and out 
+    //intake.whileTrue(intakeSystem.startIntake());
+    //intakeOut.whileTrue(intakeSystem.intakeOut());
+
+
+  }
+
 }
 
