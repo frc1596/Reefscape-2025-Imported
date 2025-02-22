@@ -155,8 +155,8 @@ public class SwerveSubsystem extends SubsystemBase {
   }
   public double getRotation() {
     //SmartDashboard.putNumber("Gyro", -gyro.getAngle());
-    //return -gyro.getAngle();
-    return 0;
+    return -gyro.getAngle();
+    //return 0;
  }
   public void resetPose(Pose2d pose) {
     odometry.resetPosition(new Rotation2d(gyro.getYaw()), getPositions(), pose);

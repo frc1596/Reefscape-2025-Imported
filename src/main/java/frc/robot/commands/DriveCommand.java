@@ -98,7 +98,7 @@ public class DriveCommand extends Command {
         rotVel = -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
       }
     }
-    else if (joystickMagnitude > .04) {
+    else if (joystickMagnitude > .02) {
         rotVel = mController.getRightX();
         rotVel = rotHelper.setInput(rotVel).applyPower(2).value;
 
