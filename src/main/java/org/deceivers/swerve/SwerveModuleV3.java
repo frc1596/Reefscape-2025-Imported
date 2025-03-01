@@ -1,16 +1,24 @@
 package org.deceivers.swerve;
 
+import com.revrobotics.*;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.hardware.CANcoder;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,8 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModuleV3 implements SwerveModule {
 
-    private final CANSparkMax mAzimuthMotor;
-    private final CANSparkMax mDriveMotor;
+    private final SparkMax mAzimuthMotor;
+    private final SparkMax mDriveMotor;
 
 
     private final CANcoder mAzimuthAbsoluteEncoder;
@@ -30,8 +38,7 @@ public class SwerveModuleV3 implements SwerveModule {
 
     private final RelativeEncoder mAzimuthIncrementalEncoder;
     private final RelativeEncoder mDriveEncoder;
-    private final SparkPIDController mDrivePID;
-    private final SparkPIDController mAzimuthPID;
+
     private final Translation2d mLocation;
     private final String mName;
 
@@ -39,7 +46,7 @@ public class SwerveModuleV3 implements SwerveModule {
 
     // need to update the speed to m/s
 
-    public SwerveModuleV3(CANSparkMax azimuthMotor, CANSparkMax driveMotor,
+    public SwerveModuleV3(SparkMax azimuthMotor, SparkMax driveMotor,
             Translation2d location, String name, CANcoder azimuthEncoder) {
             
         mDriveMotor = driveMotor;
@@ -48,38 +55,49 @@ public class SwerveModuleV3 implements SwerveModule {
         mName = name;
 
         // Rest motors to factory defaults to ensure correct parameters
-        mDriveMotor.restoreFactoryDefaults();
-        mAzimuthMotor.restoreFactoryDefaults();
+        //mDriveMotor.restoreFactoryDefaults();
+        //mAzimuthMotor.restoreFactoryDefaults();
 
         // Get encoders
         mAzimuthAbsoluteEncoder = azimuthEncoder;
         mAzimuthIncrementalEncoder = mAzimuthMotor.getEncoder();
         mDriveEncoder = mDriveMotor.getEncoder();
 
-        // Get PIDs
-        mDrivePID = mDriveMotor.getPIDController();
-        mAzimuthPID = mAzimuthMotor.getPIDController();
 
-        // Configure drive motor controller parameters
-        mDriveMotor.setInverted(true);
-        mDriveMotor.setClosedLoopRampRate(0);
-        mDriveMotor.setOpenLoopRampRate(.1);
-        mDriveMotor.setIdleMode(IdleMode.kBrake);
+        SparkMaxConfig driveConfig = new SparkMaxConfig();
 
-        //If rpm is lower than limitRPM, the stall limit will be used, otherwise the free limit will be used
-        mDriveMotor.setSmartCurrentLimit(40, 60, 100); 
+        driveConfig
+    .inverted(true)
+    .idleMode(IdleMode.kBrake);
+    driveConfig.encoder
+    .positionConversionFactor(0.319024/6.12)
+    .velocityConversionFactor(((0.319024/6.12) / 60));
+    driveConfig.closedLoop
+    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    .pid(1.0, 0.0, 0.0)
+    .velocityFF(0.0);
+    
+    
+mDriveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Configure Drive Encoder
-        mDriveEncoder.setPositionConversionFactor(0.319024/6.12); //1/6.12
-        mDriveEncoder.setVelocityConversionFactor(((0.319024/6.12) / 60));
-        mDriveEncoder.setPosition(0);
+SparkMaxConfig azimuthConfig = new SparkMaxConfig();
 
-        // Configure azimuth motor controller parameters
-        mAzimuthMotor.setInverted(true);
-        mAzimuthMotor.setClosedLoopRampRate(0);
-        mAzimuthMotor.setOpenLoopRampRate(0);
-        mAzimuthMotor.setIdleMode(IdleMode.kBrake);
-        mAzimuthMotor.setSmartCurrentLimit(40);
+azimuthConfig
+.inverted(true)
+.idleMode(IdleMode.kBrake);
+azimuthConfig.encoder
+.positionConversionFactor(150.0/7.0)
+.velocityConversionFactor(1);
+azimuthConfig.closedLoop
+.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+.pid(0.05, 0.0, 0.0)
+.positionWrappingMaxInput(360)
+.positionWrappingMinInput(0);
+
+
+mDriveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+// Get PIDs
+
 
         // Configure drive absolute encoder
        // mAzimuthAbsoluteEncoder.setPositionConversionFactor(1.0);
@@ -87,10 +105,8 @@ public class SwerveModuleV3 implements SwerveModule {
         //mAzimuthAbsoluteEncoder.setAverageDepth(1);
         
         // Configure azimuth incremental encoder
-        mAzimuthIncrementalEncoder.setPositionConversionFactor(150.0/7.0); //derek Maybe fix this
         // Configure drive PID
-        mDrivePID.setFF(.3);
-        mDrivePID.setP(.1);
+
 
 
         azimuthPID.enableContinuousInput(-180,180);
@@ -103,9 +119,7 @@ public class SwerveModuleV3 implements SwerveModule {
         // mAzimuthPID.setPositionPIDWrappingMaxInput(360);
 
 
-        // Burn flahs in case of power cycle
-        mDriveMotor.burnFlash();
-        mAzimuthMotor.burnFlash();
+
     }
 
     // Sets the drive motor speed in open loop mode
@@ -184,7 +198,7 @@ public class SwerveModuleV3 implements SwerveModule {
         //mAzimuthPID.setReference(setpoint, ControlType.kPosition);
         
         mAzimuthMotor.set(azimuthPID.calculate(current.getDegrees(), setpoint));
-        mDrivePID.setReference(velocity, ControlType.kVelocity);
+        //mDrivePID.setReference(velocity, ControlType.kVelocity);
     }
 
     // Stop all motors
