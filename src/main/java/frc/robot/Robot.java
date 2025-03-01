@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 //import frc.robot.commands.IntakePivotCommand;
 //import frc.robot.commands.ShooterPivotCommand;
@@ -49,7 +50,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final SwerveSubsystem swerve = new SwerveSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
-  private final IntakeSubsystem intakeSystem = new IntakeSubsystem();
+  private final IntakePivotSubsystem intakeSystem = new IntakePivotSubsystem();
   // private final IntakePivotSubsystem intake = new IntakePivotSubsystem();
   // private final ShooterPivotSubsystem shooter = new ShooterPivotSubsystem();
   XboxController driverController = new XboxController(0);
@@ -249,7 +250,7 @@ public class Robot extends TimedRobot {
     Trigger algaeLevelTwoIntake = operatorController.povLeft().and(operatorController.x());
 
     //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
-    
+
     // Bindings 
     //coral 
     elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakeSystem.intakePivot(10)));

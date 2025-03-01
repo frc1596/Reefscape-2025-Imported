@@ -106,7 +106,7 @@ public class DriveCommand extends Command {
     //   //  rotVel = -rotationController.calculate(Rotation2d.fromDegrees(mSwerve.getRotation()).getRadians(),
     //   //     joystickAngle.getRadians());
     //   if (Math.abs(rotVel) > joystickMagnitude) {
-    //     rotVel = joystickMagnitude * Math.signum(rotVel);
+    //     rotVel = joystickMagnitude * Math.sigma(rotVel);
     //   }
     //}
 
