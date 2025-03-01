@@ -34,8 +34,6 @@ import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-//import frc.robot.commands.IntakePivotCommand;
-//import frc.robot.commands.ShooterPivotCommand;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -50,8 +48,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final SwerveSubsystem swerve = new SwerveSubsystem();
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
-  private final IntakePivotSubsystem intakeSystem = new IntakePivotSubsystem();
-  // private final IntakePivotSubsystem intake = new IntakePivotSubsystem();
+  private final IntakePivotSubsystem intakePivotSubsystem = new IntakePivotSubsystem();
+  private final IntakeSubsystem intake = new IntakeSubsystem();
   // private final ShooterPivotSubsystem shooter = new ShooterPivotSubsystem();
   XboxController driverController = new XboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
@@ -241,7 +239,7 @@ public class Robot extends TimedRobot {
     Trigger elevatorDown = operatorController.povDown();
 
     //intake and out 
-    Trigger intake = operatorController.rightBumper();
+    Trigger intakeIn = operatorController.rightBumper();
     Trigger intakeOut = operatorController.leftBumper();
 
     // harvesting algae 
@@ -253,23 +251,21 @@ public class Robot extends TimedRobot {
 
     // Bindings 
     //coral 
-    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakeSystem.intakePivot(10)));
-    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).andThen(intakeSystem.intakePivot(20)));
-    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).andThen(intakeSystem.intakePivot(30)));
-    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).andThen(intakeSystem.intakePivot(40)));
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakePivotSubsystem.intakePivot(10)));
+    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).andThen(intakePivotSubsystem.intakePivot(20)));
+    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(30)));
+    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(40)));
     elevatorDown.whileTrue(elevator.elevatorDown());
 
     // algae 
-    algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakeSystem.intakePivot(10)));
-    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakeSystem.intakePivot(20)));
-    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakeSystem.intakePivot(30)));
+    algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakePivotSubsystem.intakePivot(10)));
+    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(20)));
+    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(30)));
 
 
     // intake and out 
-    //intake.whileTrue(intakeSystem.startIntake());
-    //intakeOut.whileTrue(intakeSystem.intakeOut());
-
-
+    intakeIn.whileTrue(intake.runIntakes(0.5));
+    intakeOut.whileTrue(intake.reverseIntakes(-0.5));
   }
 
 }
