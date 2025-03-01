@@ -19,13 +19,13 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public IntakeSubsystem()
     {
-        intakeMotor = new TalonFX(1);
+        intakeMotor = new TalonFX(16);
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
         intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake; 
         intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true; 
         intakeConfig.CurrentLimits.SupplyCurrentLimit = 40;
         intakeConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.5;
-        intakeMotor.getConfigurator().apply(intakeConfig);
+        intakeMotor.getConfigurator().apply(intakeConfig, 0.05);
     }
 
     public void startIntake(double speed)
@@ -40,14 +40,15 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public void reverseIntake(double speed)
     {
-        intakeMotor.set(-speed);
+        intakeMotor.set(speed);
     }
   
     public void doNothing(){}
 
     public Command runIntakes(double speed)
     {
-        return this.run(() -> startIntake(0.5)); 
+        return this.startEnd(() -> startIntake(speed), () -> stopIntake());
+        
     }
 
     public Command stopIntakes()
@@ -57,7 +58,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command reverseIntakes(double speed)
     {
-        return this.run(() -> reverseIntake(speed));
+        return this.startEnd(() -> reverseIntake(speed), () -> stopIntake());
     }
     
 }
