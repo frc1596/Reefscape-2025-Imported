@@ -251,21 +251,24 @@ public class Robot extends TimedRobot {
 
     // Bindings 
     //coral 
-    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakePivotSubsystem.intakePivot(10)));
-    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).andThen(intakePivotSubsystem.intakePivot(20)));
-    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(30)));
-    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(40)));
+    // elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakePivotSubsystem.intakePivot(1)));
+    // elevatorLevelThree.whileTrue(elevator.elevatorUp(3).andThen(intakePivotSubsystem.intakePivot(2)));
+    // elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(3)));
+    // elevatorLevelOne.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(4)));
     elevatorDown.whileTrue(elevator.elevatorDown());
-
+    elevatorLevelFour.whileTrue(intakePivotSubsystem.intakePivot(-1));
+    elevatorLevelThree.whileTrue(intakePivotSubsystem.intakePivot(0));
+    elevatorLevelTwo.whileTrue(intakePivotSubsystem.intakePivot(3));
+    elevatorLevelOne.whileTrue(intakePivotSubsystem.intakePivot(-3));
     // algae 
-    algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakePivotSubsystem.intakePivot(10)));
-    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(20)));
-    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(30)));
+    algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakePivotSubsystem.intakePivot(1)));
+    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(2)));
+    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(3)));
 
 
     // intake and out 
-    intakeIn.whileTrue(intake.runIntakes(0.5));
-    intakeOut.whileTrue(intake.reverseIntakes(-0.5));
+    intakeIn.whileTrue(intake.runIntakes(1));
+    intakeOut.whileTrue(intake.reverseIntakes(-1));
   }
 
 }

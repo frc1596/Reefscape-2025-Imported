@@ -24,7 +24,7 @@ public class IntakeSubsystem extends SubsystemBase{
         intakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake; 
         intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true; 
         intakeConfig.CurrentLimits.SupplyCurrentLimit = 40;
-        intakeConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.5;
+        //intakeConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = 0.5;
         intakeMotor.getConfigurator().apply(intakeConfig, 0.05);
     }
 

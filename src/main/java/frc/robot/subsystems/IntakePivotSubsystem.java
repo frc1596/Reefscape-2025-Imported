@@ -23,17 +23,17 @@ public class IntakePivotSubsystem extends SubsystemBase {
   private final RelativeEncoder mIntakePivotEncoder;
   private final SparkClosedLoopController mIntakePID;
 
-  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(600, 600));
+  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(15, 24));
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
   public IntakePivotSubsystem() {
 
     intakePivotConfig.idleMode(IdleMode.kBrake);
-    intakePivotConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.3, 0, 0); 
+    intakePivotConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(2.5, 0, 0); 
     intakePivotConfig.encoder.positionConversionFactor(1);//(360.0/(60.0));
     intakePivotConfig.encoder.velocityConversionFactor(1); //(360.0/(60.0*10));
-    intakePivotConfig.smartCurrentLimit(10);
+    intakePivotConfig.smartCurrentLimit(40);
     intakePivotSparkMax.configure(intakePivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
 
     //Set initial encoder position to 0
@@ -76,6 +76,6 @@ public class IntakePivotSubsystem extends SubsystemBase {
     }
 
     public boolean moveInPosistion() {
-      return Math.abs(m_setpoint.position - m_goal.position) < 5;
+      return Math.abs(m_setpoint.position - m_goal.position) < 1.0;
     }
 }
