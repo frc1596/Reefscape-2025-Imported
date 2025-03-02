@@ -53,7 +53,8 @@ public class Robot extends TimedRobot {
   // private final ShooterPivotSubsystem shooter = new ShooterPivotSubsystem();
   XboxController driverController = new XboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
-
+AddressableLED m_led = new AddressableLED(9);
+AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(48);
   // private final Compressor mCompressor = new Compressor(PneumaticsModuleType.CTREPCM);
   // private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1,0 );
   // Limelight limelight = new Limelight();
@@ -74,6 +75,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     configureButtonBindings();
+m_led.setLength(48);
+m_led.start();
 
     // NamedCommands.registerCommand("Intake", intake.intakeNote());
     // NamedCommands.registerCommand("Intake up", intake.intakeUp());
@@ -125,6 +128,10 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     // led.isEnabled = false;
     //led.setLEDGreen();
+    for(int i = 0; i < 48; i++){
+      m_ledBuffer.setRGB(i,0, 0, 0); //grb
+    }
+    m_led.setData(m_ledBuffer);
   }
 
   @Override
@@ -158,14 +165,15 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove` 
     // this line or comment it out.
-    // led.isEnabled = true;
 
 
+    for(int i = 0; i < 48; i++){
+      m_ledBuffer.setRGB(i,0, 255, 0); //grb
+    }
+    m_led.setData(m_ledBuffer);
 
-    // m_doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
     swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController));
-    // intake.setDefaultCommand(new IntakePivotCommand(intake, operaterController));
-    // shooter.setDefaultCommand(new ShooterPivotCommand(shooter, operaterController, limelight));
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

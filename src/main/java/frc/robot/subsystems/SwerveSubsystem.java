@@ -10,7 +10,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.PIDConstants;
 // import com.pathplanner.lib.util.ReplanningConfig;
-
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.spark.SparkMax;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -69,6 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private SimSwerveModule[] modules;
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
+  private RobotConfig config;
 
   //public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
@@ -81,32 +84,37 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem() {
    gyro.reset();
 
+    // Load the RobotConfig from the GUI settings. You should probably
+    // store this in your Constants file
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
     // Configure AutoBuilder last
-  //   AutoBuilder.configureHolonomic(
-  //           mSwerveDrive::getPose, // Robot pose supplier
-  //           mSwerveDrive::resetPosePathplanner, // Method to reset odometry (will be called if your auto has a starting pose)
-  //           mSwerveDrive::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-  //           mSwerveDrive::drivePathplanner, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-  //           new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-  //                   new PIDConstants(3.8, 0.0, 0), // Translation PID constants
-  //                   new PIDConstants(3.5, 0.0, 0), // Rotation PID constants
-  //                   5.059, // Max module speed, in m/s
-  //                   0.4572, // Drive base radius in meters. Distance from robot center to furthest module.
-  //                   new ReplanningConfig() // Default path replanning config. See the API for the options here
-  //           ),
-  //           () -> {
-  //             // Boolean supplier that controls when the path will be mirrored for the red alliance
-  //             // This will flip the path being followed to the red side of the field.
-  //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    AutoBuilder.configure(
+            mSwerveDrive::getPose, // Robot pose supplier
+            mSwerveDrive::resetPosePathplanner, // Method to reset odometry (will be called if your auto has a starting pose)
+            mSwerveDrive::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> mSwerveDrive.drivePathplanner(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(3.8, 0.0, 0), // Translation PID constants
+                    new PIDConstants(3.5, 0.0, 0) // Rotation PID constants
+            ),config,
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-  //             var alliance = DriverStation.getAlliance();
-  //             if (alliance.isPresent()) {
-  //               return alliance.get() == DriverStation.Alliance.Red;
-  //             }
-  //             return false;
-  //           },
-  //           this // Reference to this subsystem to set requirements
-  // );
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+  );
   }
 
   @Override
