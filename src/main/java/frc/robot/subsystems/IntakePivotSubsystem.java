@@ -23,14 +23,14 @@ public class IntakePivotSubsystem extends SubsystemBase {
   private final RelativeEncoder mIntakePivotEncoder;
   private final SparkClosedLoopController mIntakePID;
 
-  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(15, 24));
+  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(30, 25));
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
   public IntakePivotSubsystem() {
 
     intakePivotConfig.idleMode(IdleMode.kBrake);
-    intakePivotConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(2.5, 0, 0); 
+    intakePivotConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(2.0, 0, 0.0); 
     intakePivotConfig.encoder.positionConversionFactor(1);//(360.0/(60.0));
     intakePivotConfig.encoder.velocityConversionFactor(1); //(360.0/(60.0*10));
     intakePivotConfig.smartCurrentLimit(40);
