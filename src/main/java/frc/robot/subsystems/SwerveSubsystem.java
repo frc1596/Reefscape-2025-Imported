@@ -6,6 +6,7 @@ import org.deceivers.swerve.SwerveModuleV3;
 import com.ctre.phoenix6.hardware.CANcoder;
 //import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.ModuleConfig;
 // import com.pathplanner.lib.path.PathPlannerTrajectory;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.PIDConstants;
@@ -27,6 +28,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -71,7 +73,6 @@ public class SwerveSubsystem extends SubsystemBase {
   private SimSwerveModule[] modules;
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
-  private RobotConfig config;
 
   //public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
@@ -84,14 +85,26 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem() {
    gyro.reset();
 
-    // Load the RobotConfig from the GUI settings. You should probably
-    // store this in your Constants file
-    try{
-      config = RobotConfig.fromGUISettings();
-    } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
-    }
+   final RobotConfig ppConfig =
+      new RobotConfig(
+          70.0,
+          6.8,
+          new ModuleConfig(
+              0.0508,
+              5.06,
+              1,
+              DCMotor.getNEO(1), 
+              6.12,
+              40,
+              1),
+              new Translation2d[] {
+                new Translation2d(0.29845, -0.29845),
+                new Translation2d(-0.29845, -0.29845),
+                new Translation2d(-0.29845, 0.29845),
+                new Translation2d(0.29845, 0.29845)
+              });
+
+
     // Configure AutoBuilder last
     AutoBuilder.configure(
             mSwerveDrive::getPose, // Robot pose supplier
@@ -101,7 +114,7 @@ public class SwerveSubsystem extends SubsystemBase {
             new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(3.8, 0.0, 0), // Translation PID constants
                     new PIDConstants(3.5, 0.0, 0) // Rotation PID constants
-            ),config,
+            ),ppConfig,
             () -> {
               // Boolean supplier that controls when the path will be mirrored for the red alliance
               // This will flip the path being followed to the red side of the field.
