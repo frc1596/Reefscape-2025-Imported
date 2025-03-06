@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
   XboxController driverController = new XboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
 AddressableLED m_led = new AddressableLED(9);
-AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(48);
+AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
   // private final Compressor mCompressor = new Compressor(PneumaticsModuleType.CTREPCM);
   // private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1,0 );
   // Limelight limelight = new Limelight();
@@ -75,14 +75,27 @@ AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(48);
   public void robotInit() {
 
     configureButtonBindings();
-m_led.setLength(48);
+m_led.setLength(96);
 m_led.start();
 
-    // NamedCommands.registerCommand("Intake", intake.intakeNote());
-    // NamedCommands.registerCommand("Intake up", intake.intakeUp());
-    // NamedCommands.registerCommand("Stop Intake", intake.stopthestupidinatkething());
+    NamedCommands.registerCommand("Outtake", intake.runIntakes(0.5));
+    NamedCommands.registerCommand("Intake", intake.reverseIntakes(-0.5));
+    NamedCommands.registerCommand("Stop Intake", intake.runIntakes(0));
+
+     NamedCommands.registerCommand("Elevator Down", elevator.elevatorDown());
+     NamedCommands.registerCommand("Elevator L1", elevator.elevatorUp(1));
+     NamedCommands.registerCommand("ElevatorL2", elevator.elevatorUp(2));
+     NamedCommands.registerCommand("ElevatorL3", elevator.elevatorUp(3));
+     NamedCommands.registerCommand("ElevatorL4", elevator.elevatorUp(4));
+
+     NamedCommands.registerCommand("Pivot to Station", intakePivotSubsystem.intakePivot(-1));
+     NamedCommands.registerCommand("Pivot to L2L3", intakePivotSubsystem.intakePivot(0));
+     NamedCommands.registerCommand("Pivot to L1", intakePivotSubsystem.intakePivot(-1));
+
     // NamedCommands.registerCommand("index", intake.putThatThingBackWhereItCameFromOrSoHelpMe());
     // NamedCommands.registerCommand("Intake Down", intake.intakeDown());
+    NamedCommands.registerCommand("Intake up", elevator.elevatorUp(4));
+
 
     // NamedCommands.registerCommand("shooterAim", shooter.shooterAim());
     // NamedCommands.registerCommand("shooterIntake", shooter.shooterindex());
@@ -98,9 +111,6 @@ m_led.start();
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(160,120);
 
-
-
-  
     //camera.setFPS(24);
   }
 
@@ -128,7 +138,7 @@ m_led.start();
   public void disabledInit() {
     // led.isEnabled = false;
     //led.setLEDGreen();
-    for(int i = 0; i < 48; i++){
+    for(int i = 0; i < 96; i++){
       m_ledBuffer.setRGB(i,0, 0, 0); //grb
     }
     m_led.setData(m_ledBuffer);
@@ -166,11 +176,22 @@ m_led.start();
     // continue until interrupted by another command, remove` 
     // this line or comment it out.
 
-
-    for(int i = 0; i < 48; i++){
-      m_ledBuffer.setRGB(i,0, 255, 0); //grb
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+       if(alliance.get() == DriverStation.Alliance.Red){
+        for(int i = 0; i < 96; i++){
+          m_ledBuffer.setRGB(i,0, 100, 0); //grb
+        }
+        m_led.setData(m_ledBuffer);
+       } else{
+        for(int i = 0; i < 96; i++){
+          m_ledBuffer.setRGB(i,0, 0, 100); //grb
+        }
+        m_led.setData(m_ledBuffer);
+       };
+      
     }
-    m_led.setData(m_ledBuffer);
+
 
     swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController));
 
@@ -259,15 +280,16 @@ m_led.start();
 
     // Bindings 
     //coral 
-    // elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakePivotSubsystem.intakePivot(1)));
-    // elevatorLevelThree.whileTrue(elevator.elevatorUp(3).andThen(intakePivotSubsystem.intakePivot(2)));
-    // elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(3)));
-    // elevatorLevelOne.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(4)));
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(-1)));
+    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(0)));
+    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(1.5)));
+    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(-3.2)));
     elevatorDown.whileTrue(elevator.elevatorDown());
-    elevatorLevelFour.whileTrue(intakePivotSubsystem.intakePivot(-1));
-    elevatorLevelThree.whileTrue(intakePivotSubsystem.intakePivot(0));
-    elevatorLevelTwo.whileTrue(intakePivotSubsystem.intakePivot(3));
-    elevatorLevelOne.whileTrue(intakePivotSubsystem.intakePivot(-3));
+    // elevatorLevelFour.whileTrue(intakePivotSubsystem.intakePivot(-1));
+    // elevatorLevelThree.whileTrue(intakePivotSubsystem.intakePivot(0));
+    // elevatorLevelTwo.whileTrue(intakePivotSubsystem.intakePivot(3));
+    // elevatorLevelOne.whileTrue(intakePivotSubsystem.intakePivot(-3));
+    
     // algae 
     algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakePivotSubsystem.intakePivot(1)));
     algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(2)));
@@ -275,8 +297,8 @@ m_led.start();
 
 
     // intake and out 
-    intakeIn.whileTrue(intake.runIntakes(1));
-    intakeOut.whileTrue(intake.reverseIntakes(-1));
+    intakeIn.whileTrue(intake.runIntakes(0.20));
+    intakeOut.whileTrue(intake.reverseIntakes(-0.20));
   }
 
 }

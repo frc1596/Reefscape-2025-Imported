@@ -34,6 +34,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
+  public int elevatorLevel; 
+
   public ElevatorSubsystem() {
     //Configure elevator motor 1 
     elevatorOneConfig.idleMode(IdleMode.kBrake);
@@ -78,16 +80,20 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command elevatorUp(int level){
       // move the elevator up
       if (level == 1){
+        elevatorLevel = 1; 
         return this.startEnd(() -> setPosistion(30), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 2){
-        return this.startEnd(() -> setPosistion(50), () -> doNothing()).until(() -> moveInPosistion());
+        elevatorLevel = 2; 
+        return this.startEnd(() -> setPosistion(64), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 3){
+        elevatorLevel = 3; 
         return this.startEnd(() -> setPosistion(70), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 4){
-        return this.startEnd(() -> setPosistion(100), () -> doNothing()).until(() -> moveInPosistion());
+        elevatorLevel = 4;
+        return this.startEnd(() -> setPosistion(140), () -> doNothing()).until(() -> moveInPosistion());
       }
       else{
         return this.startEnd(() -> setPosistion(0), () -> doNothing()).until(() -> moveInPosistion());

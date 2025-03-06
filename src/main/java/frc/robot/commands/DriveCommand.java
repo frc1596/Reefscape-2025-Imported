@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+//import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -19,6 +20,7 @@ public class DriveCommand extends Command {
     public XboxController mController;
     public CommandXboxController mController2;
     public Limelight mLimelight;
+    //public ElevatorSubsystem mElevator;  
 
     private PIDController limController = new PIDController(0.3, 0.0, 0.0);
     private PIDController autoAimController = new PIDController(0.007,0,0);
@@ -63,6 +65,14 @@ public class DriveCommand extends Command {
     yVel = mController.getLeftY()*0.25;
     xVel = mController.getLeftX()*0.25;
 
+    // Check if the elevator is at level 4
+    // if (mElevator.elevatorLevel == 4) {
+    //   driveFactor = 0.75;  
+    // }
+    // else {
+    //     driveFactor = 1;  
+    // }
+
     //Trigger Drive Method (comment out these 4 lines to go back to normal drive)
     driveDirection = Math.atan2(yVel, xVel);
     driveMagnitude = mController.getRightTriggerAxis();
@@ -80,10 +90,11 @@ public class DriveCommand extends Command {
       mController.setRumble(RumbleType.kLeftRumble, 0);
       mController.setRumble(RumbleType.kRightRumble, 0);
     }
+    rotVel = mController.getRightX();
 
     yVel = yHelper.setInput(yVel).applyPower(2).value;
     xVel = xHelper.setInput(xVel).applyPower(2).value;
-    rotVel = rotHelper.setInput(rotVel).applyPower(2).value;
+    rotVel = rotHelper.setInput(rotVel).applyPower(3).value;
 
     yVel = yVel * driveFactor;
     xVel = xVel * driveFactor;

@@ -71,7 +71,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
     public void doNothing(){}
     
-    public Command intakePivot(int angle){
+    public Command intakePivot(double angle){
       return this.startEnd(() -> setAngle(angle), () -> doNothing()).until(() -> moveInPosistion());
     }
 
