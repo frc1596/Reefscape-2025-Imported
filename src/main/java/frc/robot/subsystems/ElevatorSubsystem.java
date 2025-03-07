@@ -30,7 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final RelativeEncoder mElevatorEncoder;
   private final SparkClosedLoopController mElevatorPID;
 
-  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(1500, 300));
+  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(2000, 110));
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
@@ -39,7 +39,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {
     //Configure elevator motor 1 
     elevatorOneConfig.idleMode(IdleMode.kBrake);
-    elevatorOneConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1, 0, 0); 
+    elevatorOneConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.3, 0, 0); 
     elevatorOneConfig.encoder.positionConversionFactor(1);//(360.0/(60.0));
     elevatorOneConfig.encoder.velocityConversionFactor(1); //(360.0/(60.0*10));
     elevatorOneConfig.smartCurrentLimit(30);
@@ -99,7 +99,12 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
       else if (level == 4){
         elevatorLevel = 4;
-        return this.startEnd(() -> setPosistion(160), () -> doNothing()).until(() -> moveInPosistion());
+        //160 is max!!! Stuff will probably break if you go above it
+        return this.startEnd(() -> setPosistion(158), () -> doNothing()).until(() -> moveInPosistion());
+      }
+      else if (level == 5){
+        elevatorLevel = 5;
+        return this.startEnd(() -> setPosistion(50), () -> doNothing()).until(() -> moveInPosistion());
       }
       else{
         return this.startEnd(() -> setPosistion(0), () -> doNothing()).until(() -> moveInPosistion());

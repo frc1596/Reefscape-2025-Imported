@@ -78,15 +78,15 @@ AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
 m_led.setLength(96);
 m_led.start();
 
-    NamedCommands.registerCommand("Outtake", intake.runIntakes(0.5));
-    NamedCommands.registerCommand("Intake", intake.reverseIntakes(-0.5));
+    NamedCommands.registerCommand("Outtake", intake.runIntakes(0.1));
+    NamedCommands.registerCommand("Intake", intake.reverseIntakes(-0.1));
     NamedCommands.registerCommand("Stop Intake", intake.runIntakes(0));
 
-     NamedCommands.registerCommand("Elevator Down", elevator.elevatorDown());
-     NamedCommands.registerCommand("Elevator L1", elevator.elevatorUp(1));
-     NamedCommands.registerCommand("ElevatorL2", elevator.elevatorUp(2));
-     NamedCommands.registerCommand("ElevatorL3", elevator.elevatorUp(3));
-     NamedCommands.registerCommand("ElevatorL4", elevator.elevatorUp(4));
+     NamedCommands.registerCommand("Elevator Down", elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
+     NamedCommands.registerCommand("Elevator L1", elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
+     NamedCommands.registerCommand("ElevatorL2", elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5)));
+     NamedCommands.registerCommand("ElevatorL3", elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5)));
+     NamedCommands.registerCommand("ElevatorL4", elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6)));
 
      NamedCommands.registerCommand("Pivot to Station", intakePivotSubsystem.intakePivot(-1));
      NamedCommands.registerCommand("Pivot to L2L3", intakePivotSubsystem.intakePivot(0));
@@ -261,19 +261,18 @@ m_led.start();
   public void configureButtonBindings(){
     // Triggers 
     // placing coral 
-    Trigger elevatorLevelFour = operatorController.y();
-    Trigger elevatorLevelThree = operatorController.x().and(operatorController.povRight());
-    Trigger elevatorLevelTwo = operatorController.b().and(operatorController.povRight());
-    Trigger elevatorLevelOne = operatorController.a().and(operatorController.povRight());
+    Trigger elevatorLevelFour = operatorController.y().and(operatorController.povLeft().negate());
+    Trigger elevatorLevelThree = operatorController.x().and(operatorController.povLeft().negate());
+    Trigger elevatorLevelTwo = operatorController.b().and(operatorController.povLeft().negate());
+    Trigger elevatorLevelOne = operatorController.a().and(operatorController.povLeft().negate());
     Trigger elevatorDown = operatorController.povDown();
 
     Trigger humanStation = operatorController.povUp();
 
 
     //intake and out 
-    Trigger intakeIn = operatorController.rightBumper().and(operatorController.povRight());
-    Trigger intakeOut = operatorController.leftBumper().and(operatorController.povRight());
-
+    Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());
+    Trigger intakeOut = operatorController.leftBumper().and(operatorController.povLeft().negate());
     Trigger intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povLeft());
     Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povLeft());
 
@@ -286,21 +285,18 @@ m_led.start();
 
     // Bindings 
     //coral 
-    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(5)));
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6)));
     elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5)));
     elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5)));
     elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
     elevatorDown.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
+    
+    humanStation.whileTrue(elevator.elevatorUp(5).alongWith(intakePivotSubsystem.intakePivot(1.8)));
 
-    humanStation.whileTrue(elevator.elevatorUp(5).alongWith(intakePivotSubsystem.intakePivot(-1)));
-    // elevatorLevelFour.whileTrue(intakePivotSubsystem.intakePivot(-1));
-    // elevatorLevelThree.whileTrue(intakePivotSubsystem.intakePivot(0));
-    // elevatorLevelTwo.whileTrue(intakePivotSubsystem.intakePivot(3));
-    // elevatorLevelOne.whileTrue(intakePivotSubsystem.intakePivot(-3));
     // algae 
-    algaeGroundIntake.whileTrue(elevator.elevatorDown().andThen(intakePivotSubsystem.intakePivot(-4)));
-    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(2)));
-    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(3)));
+    algaeGroundIntake.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(-4)));
+    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(-3)));
+    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-3)));
 
 
     // intake and out 
