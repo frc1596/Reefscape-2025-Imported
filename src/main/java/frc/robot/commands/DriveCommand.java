@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.ElevatorSubsystem;
 //import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -20,7 +21,6 @@ public class DriveCommand extends Command {
     public XboxController mController;
     public CommandXboxController mController2;
     public Limelight mLimelight;
-    //public ElevatorSubsystem mElevator;  
 
     private PIDController limController = new PIDController(0.3, 0.0, 0.0);
     private PIDController autoAimController = new PIDController(0.007,0,0);
@@ -61,26 +61,25 @@ public class DriveCommand extends Command {
     double rotVel = 0;
     double driveDirection = 0;
     double driveMagnitude = 0;
-
+    
     yVel = mController.getLeftY()*0.25;
     xVel = mController.getLeftX()*0.25;
-
-    // Check if the elevator is at level 4
-    // if (mElevator.elevatorLevel == 4) {
-    //   driveFactor = 0.75;  
-    // }
-    // else {
-    //     driveFactor = 1;  
-    // }
 
     //Trigger Drive Method (comment out these 4 lines to go back to normal drive)
     driveDirection = Math.atan2(yVel, xVel);
     driveMagnitude = mController.getRightTriggerAxis();
     yVel = Math.sin(driveDirection) * driveMagnitude;
     xVel = Math.cos(driveDirection) * driveMagnitude;
-
-    // slow down when right bumper
     
+//     if (ElevatorSubsystem.elevatorLevel >= 1){
+//       driveFactor =- 0.02; 
+//       driveFactor = Math.max(driveFactor, 0.1);
+//     }
+//     else{
+//         driveFactor = 1.0;
+//     }
+// SmartDashboard.putNumber("Drive Factor", driveFactor);
+// SmartDashboard.putNumber("Elejiojovatpr level", ElevatorSubsystem.elevatorLevel);
 
     //rumble when 20 seconds left
     if (DriverStation.isTeleop() && (DriverStation.getMatchTime() < 20.0) && (DriverStation.getMatchTime() > 19.0)) {

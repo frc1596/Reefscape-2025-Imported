@@ -34,7 +34,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
-  public int elevatorLevel; 
+  public static int elevatorLevel = 0; 
 
   public ElevatorSubsystem() {
     //Configure elevator motor 1 
@@ -77,23 +77,29 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void doNothing(){}
     
+    public void setLevel(int level){
+      elevatorLevel = level;
+    }
+    public Command setLevelCommand(int level){
+      return this.runEnd(() ->setLevel(level), () ->doNothing());
+    }
     public Command elevatorUp(int level){
       // move the elevator up
       if (level == 1){
         elevatorLevel = 1; 
-        return this.startEnd(() -> setPosistion(30), () -> doNothing()).until(() -> moveInPosistion());
+        return this.startEnd(() -> setPosistion(33), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 2){
         elevatorLevel = 2; 
-        return this.startEnd(() -> setPosistion(64), () -> doNothing()).until(() -> moveInPosistion());
+        return this.startEnd(() -> setPosistion(58), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 3){
         elevatorLevel = 3; 
-        return this.startEnd(() -> setPosistion(70), () -> doNothing()).until(() -> moveInPosistion());
+        return this.startEnd(() -> setPosistion(90), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 4){
         elevatorLevel = 4;
-        return this.startEnd(() -> setPosistion(140), () -> doNothing()).until(() -> moveInPosistion());
+        return this.startEnd(() -> setPosistion(160), () -> doNothing()).until(() -> moveInPosistion());
       }
       else{
         return this.startEnd(() -> setPosistion(0), () -> doNothing()).until(() -> moveInPosistion());
@@ -102,6 +108,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Command elevatorDown(){
       // move the elevator down
+      elevatorLevel = 0;
       return this.startEnd(() -> setPosistion(0), () -> doNothing()).until(() -> moveInPosistion());
     }
 

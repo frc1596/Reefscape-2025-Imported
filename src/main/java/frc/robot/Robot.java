@@ -262,14 +262,20 @@ m_led.start();
     // Triggers 
     // placing coral 
     Trigger elevatorLevelFour = operatorController.y();
-    Trigger elevatorLevelThree = operatorController.x();
-    Trigger elevatorLevelTwo = operatorController.b();
-    Trigger elevatorLevelOne = operatorController.a();
+    Trigger elevatorLevelThree = operatorController.x().and(operatorController.povRight());
+    Trigger elevatorLevelTwo = operatorController.b().and(operatorController.povRight());
+    Trigger elevatorLevelOne = operatorController.a().and(operatorController.povRight());
     Trigger elevatorDown = operatorController.povDown();
 
+    Trigger humanStation = operatorController.povUp();
+
+
     //intake and out 
-    Trigger intakeIn = operatorController.rightBumper();
-    Trigger intakeOut = operatorController.leftBumper();
+    Trigger intakeIn = operatorController.rightBumper().and(operatorController.povRight());
+    Trigger intakeOut = operatorController.leftBumper().and(operatorController.povRight());
+
+    Trigger intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povLeft());
+    Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povLeft());
 
     // harvesting algae 
     Trigger algaeGroundIntake = operatorController.povLeft().and(operatorController.a()); 
@@ -280,25 +286,30 @@ m_led.start();
 
     // Bindings 
     //coral 
-    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(-1)));
-    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(0)));
-    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(1.5)));
-    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(-3.2)));
-    elevatorDown.whileTrue(elevator.elevatorDown());
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(5)));
+    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5)));
+    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5)));
+    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
+    elevatorDown.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
+
+    humanStation.whileTrue(elevator.elevatorUp(5).alongWith(intakePivotSubsystem.intakePivot(-1)));
     // elevatorLevelFour.whileTrue(intakePivotSubsystem.intakePivot(-1));
     // elevatorLevelThree.whileTrue(intakePivotSubsystem.intakePivot(0));
     // elevatorLevelTwo.whileTrue(intakePivotSubsystem.intakePivot(3));
     // elevatorLevelOne.whileTrue(intakePivotSubsystem.intakePivot(-3));
-    
     // algae 
-    algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakePivotSubsystem.intakePivot(1)));
+    algaeGroundIntake.whileTrue(elevator.elevatorDown().andThen(intakePivotSubsystem.intakePivot(-4)));
     algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(2)));
     algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(3)));
 
 
     // intake and out 
-    intakeIn.whileTrue(intake.runIntakes(0.20));
-    intakeOut.whileTrue(intake.reverseIntakes(-0.20));
+     intakeIn.whileTrue(intake.runIntakes(0.10));
+     intakeOut.whileTrue(intake.runIntakes(-0.10));
+
+    intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));
+    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.6));
+
   }
 
 }

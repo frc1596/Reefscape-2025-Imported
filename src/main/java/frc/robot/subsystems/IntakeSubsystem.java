@@ -58,7 +58,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command reverseIntakes(double speed)
     {
-        return this.startEnd(() -> reverseIntake(speed), () -> reverseIntake(-0.1));
+        return this.startEnd(() -> reverseIntake(speed), () -> reverseIntake(0.12));
     }
     
 }
