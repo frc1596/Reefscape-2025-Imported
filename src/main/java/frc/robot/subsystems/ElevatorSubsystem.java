@@ -91,7 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
       else if (level == 2){
         elevatorLevel = 2; 
-        return this.startEnd(() -> setPosistion(58), () -> doNothing()).until(() -> moveInPosistion());
+        return this.startEnd(() -> setPosistion(48), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 3){
         elevatorLevel = 3; 
@@ -100,7 +100,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       else if (level == 4){
         elevatorLevel = 4;
         //160 is max!!! Stuff will probably break if you go above it
-        return this.startEnd(() -> setPosistion(158), () -> doNothing()).until(() -> moveInPosistion());
+        return this.startEnd(() -> setPosistion(160), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 5){
         elevatorLevel = 5;

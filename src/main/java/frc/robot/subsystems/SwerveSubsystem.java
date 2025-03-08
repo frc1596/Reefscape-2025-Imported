@@ -62,10 +62,10 @@ public class SwerveSubsystem extends SubsystemBase {
   private final CANcoder mAzimuthEncoder3 = new CANcoder(9);  //10 is back right
   private final CANcoder mAzimuthEncoder4 = new CANcoder(11); //9 is back left
 
-  private final SwerveModuleV3 Module1 = new SwerveModuleV3(mAzimuth1, mDriveMotor1, new Translation2d(0.29845, -0.29845), "Module 1", mAzimuthEncoder1);
-  private final SwerveModuleV3 Module2 = new SwerveModuleV3(mAzimuth2, mDriveMotor2, new Translation2d(-0.29845, -0.29845), "Module 2", mAzimuthEncoder2);
-  private final SwerveModuleV3 Module3 = new SwerveModuleV3(mAzimuth3, mDriveMotor3, new Translation2d(-0.29845, 0.29845), "Module 3", mAzimuthEncoder3);
-  private final SwerveModuleV3 Module4 = new SwerveModuleV3(mAzimuth4, mDriveMotor4, new Translation2d(0.29845,  0.29845), "Module 4", mAzimuthEncoder4);
+  private final SwerveModuleV3 Module1 = new SwerveModuleV3(mAzimuth1, mDriveMotor1, new Translation2d(0.29845, 0.29845), "Module 1", mAzimuthEncoder1);
+  private final SwerveModuleV3 Module2 = new SwerveModuleV3(mAzimuth2, mDriveMotor2, new Translation2d(0.29845, -0.29845), "Module 2", mAzimuthEncoder2);
+  private final SwerveModuleV3 Module3 = new SwerveModuleV3(mAzimuth3, mDriveMotor3, new Translation2d(-0.29845, -0.29845), "Module 3", mAzimuthEncoder3);
+  private final SwerveModuleV3 Module4 = new SwerveModuleV3(mAzimuth4, mDriveMotor4, new Translation2d(-0.29845,  0.29845), "Module 4", mAzimuthEncoder4);
 
   private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 

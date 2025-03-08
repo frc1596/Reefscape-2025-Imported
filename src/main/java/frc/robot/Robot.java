@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -53,8 +54,8 @@ public class Robot extends TimedRobot {
   // private final ShooterPivotSubsystem shooter = new ShooterPivotSubsystem();
   XboxController driverController = new XboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
-AddressableLED m_led = new AddressableLED(9);
-AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
+  AddressableLED m_led = new AddressableLED(9);
+  AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
   // private final Compressor mCompressor = new Compressor(PneumaticsModuleType.CTREPCM);
   // private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1,0 );
   // Limelight limelight = new Limelight();
@@ -207,6 +208,9 @@ m_led.start();
   public void teleopPeriodic() {
         // SmartDashboard.putNumber("Intake Current", examplePD.getCurrent(2));
 
+
+
+
     //if last half second, put pneumatics down
     // if (DriverStation.isTeleop() && (DriverStation.getMatchTime() < 0.6)){      
     //    m_doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
@@ -272,6 +276,7 @@ m_led.start();
 
     //intake and out 
     Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());
+    Trigger intakeInOverride = operatorController.rightBumper().and(operatorController.rightTrigger());
     Trigger intakeOut = operatorController.leftBumper().and(operatorController.povLeft().negate());
     Trigger intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povLeft());
     Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povLeft());
@@ -285,9 +290,9 @@ m_led.start();
 
     // Bindings 
     //coral 
-    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6)));
-    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5)));
-    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5)));
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
+    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
+    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
     elevatorDown.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
     
@@ -300,8 +305,9 @@ m_led.start();
 
 
     // intake and out 
-     intakeIn.whileTrue(intake.runIntakes(0.10));
+     //intakeIn.onTrue(intake.runIntakes(0.10));
      intakeOut.whileTrue(intake.runIntakes(-0.10));
+     intakeIn.whileTrue(intake.runIntakes(0.10));
 
     intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));
     intakeAlgaeOut.whileTrue(intake.runIntakes(-0.6));

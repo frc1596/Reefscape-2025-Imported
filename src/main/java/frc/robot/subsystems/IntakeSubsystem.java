@@ -10,14 +10,18 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
+
 
 
 public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX intakeMotor;
-    private final DigitalInput coralSensor = new DigitalInput(1);
+    public static DigitalInput coralSensor = new DigitalInput(1);
+
 
     //public static final double INTAKE_SPEED = 0.5;
 
@@ -51,7 +55,19 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command runIntakes(double speed)
     {
-        return this.startEnd(() -> startIntake(speed), () -> stopIntake());  
+        SmartDashboard.putBoolean("Sensor Input SUBSYS", coralSensor.get());
+        // if (Robot.coralSensorBool)
+        // {
+        //     return this.startEnd(() -> startIntake(0), () -> stopIntake());  
+        // } 
+        // else
+        // {
+        //     return this.startEnd(() -> startIntake(.10), () -> stopIntake());  
+        // }
+
+       //return this.startEnd(() -> startIntake(0.1), () -> doNothing()).until(() -> getSensor()).andThen(stopIntakes()); 
+       return this.startEnd(() -> startIntake(.10), () -> stopIntake());
+
     }
 
     public Command stopIntakes()
@@ -64,14 +80,9 @@ public class IntakeSubsystem extends SubsystemBase{
         return this.startEnd(() -> reverseIntake(speed), () -> reverseIntake(0.12));
     }
 
-    public BooleanSupplier getSensor()
+    public boolean getSensor()
     {
-        return this.getSensor();
-    }
-
-    // public Boolean getSensor(){
-    //     return(coralSensor.get());
-    //   }
-    
+       return(coralSensor.get());
+    } 
 }
 
