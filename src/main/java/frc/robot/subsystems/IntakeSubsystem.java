@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -7,7 +9,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX intakeMotor;
+    private final DigitalInput coralSensor = new DigitalInput(1);
+
     //public static final double INTAKE_SPEED = 0.5;
 
     public IntakeSubsystem()
@@ -47,8 +51,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command runIntakes(double speed)
     {
-        return this.startEnd(() -> startIntake(speed), () -> stopIntake());
-        
+        return this.startEnd(() -> startIntake(speed), () -> stopIntake());  
     }
 
     public Command stopIntakes()
@@ -60,6 +63,15 @@ public class IntakeSubsystem extends SubsystemBase{
     {
         return this.startEnd(() -> reverseIntake(speed), () -> reverseIntake(0.12));
     }
+
+    public BooleanSupplier getSensor()
+    {
+        return this.getSensor();
+    }
+
+    // public Boolean getSensor(){
+    //     return(coralSensor.get());
+    //   }
     
 }
 
