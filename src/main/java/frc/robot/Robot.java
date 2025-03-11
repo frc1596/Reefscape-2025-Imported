@@ -85,9 +85,9 @@ m_led.start();
 
      NamedCommands.registerCommand("Elevator Down", elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
      NamedCommands.registerCommand("Elevator L1", elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
-     NamedCommands.registerCommand("ElevatorL2", elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5)));
-     NamedCommands.registerCommand("ElevatorL3", elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5)));
-     NamedCommands.registerCommand("ElevatorL4", elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6)));
+     NamedCommands.registerCommand("ElevatorL2", elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
+     NamedCommands.registerCommand("ElevatorL3", elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
+     NamedCommands.registerCommand("ElevatorL4", elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.5)));
 
      NamedCommands.registerCommand("Pivot to Station", intakePivotSubsystem.intakePivot(-1));
      NamedCommands.registerCommand("Pivot to L2L3", intakePivotSubsystem.intakePivot(0));
@@ -300,15 +300,15 @@ m_led.start();
 
     // algae 
     algaeGroundIntake.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(-4)));
-    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(-3)));
-    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-3)));
+    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-3)));
+    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(-3)));
 
 
     // intake and out 
-     //intakeIn.onTrue(intake.runIntakes(0.10));
-     intakeOut.whileTrue(intake.runIntakes(-0.10));
-     intakeIn.whileTrue(intake.runIntakes(0.10));
-
+    //intakeIn.onTrue(intake.runIntakes(0.10));
+    intakeOut.whileTrue(intake.runIntakes(-0.10));
+    intakeIn.whileTrue(intake.runIntakes(0.10));
+    //.until( ()-> intake.coralSensor.get() == true)
     intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));
     intakeAlgaeOut.whileTrue(intake.runIntakes(-0.6));
 

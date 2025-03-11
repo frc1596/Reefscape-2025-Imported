@@ -66,7 +66,7 @@ public class IntakeSubsystem extends SubsystemBase{
         // }
 
        //return this.startEnd(() -> startIntake(0.1), () -> doNothing()).until(() -> getSensor()).andThen(stopIntakes()); 
-       return this.startEnd(() -> startIntake(.10), () -> stopIntake());
+       return this.startEnd(() -> startIntake(speed), () -> stopIntake());
 
     }
 

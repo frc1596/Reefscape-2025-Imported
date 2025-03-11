@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStart"
+            "pathName": "MiddleStart"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ElevatorL2"
+            "name": "ElevatorL3"
           }
         },
         {

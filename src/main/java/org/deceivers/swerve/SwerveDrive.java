@@ -136,8 +136,8 @@ public class SwerveDrive {
     }
 
     public void drivePathplanner(ChassisSpeeds wowChassisSpeeds){
-        //the below line inverts the rotation for the autonomous, cause it was backwards
-        ChassisSpeeds wow2ChassisSpeeds = new ChassisSpeeds(wowChassisSpeeds.vxMetersPerSecond,wowChassisSpeeds.vyMetersPerSecond,-wowChassisSpeeds.omegaRadiansPerSecond);
+        //invert the rotations if it turns backwards
+        ChassisSpeeds wow2ChassisSpeeds = new ChassisSpeeds(wowChassisSpeeds.vxMetersPerSecond,wowChassisSpeeds.vyMetersPerSecond,wowChassisSpeeds.omegaRadiansPerSecond);
         SwerveModuleState[] states = mKinematics.toSwerveModuleStates(wow2ChassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, 1);
         for (int i = 0; i < numModules; i++){

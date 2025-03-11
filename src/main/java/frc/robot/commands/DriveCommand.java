@@ -89,7 +89,7 @@ public class DriveCommand extends Command {
       mController.setRumble(RumbleType.kLeftRumble, 0);
       mController.setRumble(RumbleType.kRightRumble, 0);
     }
-    rotVel = mController.getRightX();
+    rotVel = -mController.getRightX();
 
     yVel = yHelper.setInput(yVel).applyPower(2).value;
     xVel = xHelper.setInput(xVel).applyPower(2).value;
