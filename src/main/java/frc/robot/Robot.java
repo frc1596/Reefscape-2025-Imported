@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -53,7 +54,8 @@ public class Robot extends TimedRobot {
   // private final ShooterPivotSubsystem shooter = new ShooterPivotSubsystem();
   XboxController driverController = new XboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
-
+  AddressableLED m_led = new AddressableLED(9);
+  AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
   // private final Compressor mCompressor = new Compressor(PneumaticsModuleType.CTREPCM);
   // private final DoubleSolenoid m_doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1,0 );
   // Limelight limelight = new Limelight();
@@ -74,12 +76,27 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     configureButtonBindings();
+m_led.setLength(96);
+m_led.start();
 
-    // NamedCommands.registerCommand("Intake", intake.intakeNote());
-    // NamedCommands.registerCommand("Intake up", intake.intakeUp());
-    // NamedCommands.registerCommand("Stop Intake", intake.stopthestupidinatkething());
+    NamedCommands.registerCommand("Outtake", intake.runIntakes(0.1));
+    NamedCommands.registerCommand("Intake", intake.reverseIntakes(-0.1));
+    NamedCommands.registerCommand("Stop Intake", intake.runIntakes(0));
+
+     NamedCommands.registerCommand("Elevator Down", elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
+     NamedCommands.registerCommand("Elevator L1", elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
+     NamedCommands.registerCommand("ElevatorL2", elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
+     NamedCommands.registerCommand("ElevatorL3", elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
+     NamedCommands.registerCommand("ElevatorL4", elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.5)));
+
+     NamedCommands.registerCommand("Pivot to Station", intakePivotSubsystem.intakePivot(-1));
+     NamedCommands.registerCommand("Pivot to L2L3", intakePivotSubsystem.intakePivot(0));
+     NamedCommands.registerCommand("Pivot to L1", intakePivotSubsystem.intakePivot(-1));
+
     // NamedCommands.registerCommand("index", intake.putThatThingBackWhereItCameFromOrSoHelpMe());
     // NamedCommands.registerCommand("Intake Down", intake.intakeDown());
+    NamedCommands.registerCommand("Intake up", elevator.elevatorUp(4));
+
 
     // NamedCommands.registerCommand("shooterAim", shooter.shooterAim());
     // NamedCommands.registerCommand("shooterIntake", shooter.shooterindex());
@@ -90,14 +107,11 @@ public class Robot extends TimedRobot {
     // NamedCommands.registerCommand("shooterprime", shooter.shooterlimelightindex());
     // NamedCommands.registerCommand("NotShootShoot", shooter.shooterNotGo());
 
-    //autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser = AutoBuilder.buildAutoChooser();
 
-    //UsbCamera camera = CameraServer.startAutomaticCapture();
-    //camera.setResolution(160,120);
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(160,120);
 
-
-
-  
     //camera.setFPS(24);
   }
 
@@ -114,8 +128,8 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-   // SmartDashboard.putData("Auto Chooser", autoChooser);
-        //SmartDashboard.putString("Selected Auto:" , autoChooser.getSelected().getName());
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putString("Selected Auto:" , autoChooser.getSelected().getName());
 
     CommandScheduler.getInstance().run();
   }
@@ -125,6 +139,10 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     // led.isEnabled = false;
     //led.setLEDGreen();
+    for(int i = 0; i < 96; i++){
+      m_ledBuffer.setRGB(i,0, 0, 0); //grb
+    }
+    m_led.setData(m_ledBuffer);
   }
 
   @Override
@@ -158,14 +176,26 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove` 
     // this line or comment it out.
-    // led.isEnabled = true;
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+       if(alliance.get() == DriverStation.Alliance.Red){
+        for(int i = 0; i < 96; i++){
+          m_ledBuffer.setRGB(i,0, 100, 0); //grb
+        }
+        m_led.setData(m_ledBuffer);
+       } else{
+        for(int i = 0; i < 96; i++){
+          m_ledBuffer.setRGB(i,0, 0, 100); //grb
+        }
+        m_led.setData(m_ledBuffer);
+       };
+      
+    }
 
 
-
-    // m_doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
     swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController));
-    // intake.setDefaultCommand(new IntakePivotCommand(intake, operaterController));
-    // shooter.setDefaultCommand(new ShooterPivotCommand(shooter, operaterController, limelight));
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -177,6 +207,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
         // SmartDashboard.putNumber("Intake Current", examplePD.getCurrent(2));
+
+
+
 
     //if last half second, put pneumatics down
     // if (DriverStation.isTeleop() && (DriverStation.getMatchTime() < 0.6)){      
@@ -232,15 +265,21 @@ public class Robot extends TimedRobot {
   public void configureButtonBindings(){
     // Triggers 
     // placing coral 
-    Trigger elevatorLevelFour = operatorController.y();
-    Trigger elevatorLevelThree = operatorController.x();
-    Trigger elevatorLevelTwo = operatorController.b();
-    Trigger elevatorLevelOne = operatorController.a();
+    Trigger elevatorLevelFour = operatorController.y().and(operatorController.povLeft().negate());
+    Trigger elevatorLevelThree = operatorController.x().and(operatorController.povLeft().negate());
+    Trigger elevatorLevelTwo = operatorController.b().and(operatorController.povLeft().negate());
+    Trigger elevatorLevelOne = operatorController.a().and(operatorController.povLeft().negate());
     Trigger elevatorDown = operatorController.povDown();
 
+    Trigger humanStation = operatorController.povUp();
+
+
     //intake and out 
-    Trigger intakeIn = operatorController.rightBumper();
-    Trigger intakeOut = operatorController.leftBumper();
+    Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());
+    Trigger intakeInOverride = operatorController.rightBumper().and(operatorController.rightTrigger());
+    Trigger intakeOut = operatorController.leftBumper().and(operatorController.povLeft().negate());
+    Trigger intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povLeft());
+    Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povLeft());
 
     // harvesting algae 
     Trigger algaeGroundIntake = operatorController.povLeft().and(operatorController.a()); 
@@ -251,21 +290,28 @@ public class Robot extends TimedRobot {
 
     // Bindings 
     //coral 
-    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).andThen(intakePivotSubsystem.intakePivot(10)));
-    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).andThen(intakePivotSubsystem.intakePivot(20)));
-    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(30)));
-    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(40)));
-    elevatorDown.whileTrue(elevator.elevatorDown());
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
+    elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
+    elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
+    elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
+    elevatorDown.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
+    
+    humanStation.whileTrue(elevator.elevatorUp(5).alongWith(intakePivotSubsystem.intakePivot(1.8)));
 
     // algae 
-    algaeGroundIntake.whileTrue(elevator.elevatorUp(0).andThen(intakePivotSubsystem.intakePivot(10)));
-    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(1).andThen(intakePivotSubsystem.intakePivot(20)));
-    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(2).andThen(intakePivotSubsystem.intakePivot(30)));
+    algaeGroundIntake.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(-4)));
+    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-3)));
+    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(-3)));
 
 
     // intake and out 
-    intakeIn.whileTrue(intake.runIntakes(0.5));
-    intakeOut.whileTrue(intake.reverseIntakes(-0.5));
+    //intakeIn.onTrue(intake.runIntakes(0.10));
+    intakeOut.whileTrue(intake.runIntakes(-0.10));
+    intakeIn.whileTrue(intake.runIntakes(0.10));
+    //.until( ()-> intake.coralSensor.get() == true)
+    intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));
+    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.6));
+
   }
 
 }

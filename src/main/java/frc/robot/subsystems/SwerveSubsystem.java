@@ -6,11 +6,14 @@ import org.deceivers.swerve.SwerveModuleV3;
 import com.ctre.phoenix6.hardware.CANcoder;
 //import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.ModuleConfig;
 // import com.pathplanner.lib.path.PathPlannerTrajectory;
 // import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 // import com.pathplanner.lib.util.PIDConstants;
 // import com.pathplanner.lib.util.ReplanningConfig;
-
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.spark.SparkMax;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -25,6 +28,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -58,10 +62,10 @@ public class SwerveSubsystem extends SubsystemBase {
   private final CANcoder mAzimuthEncoder3 = new CANcoder(9);  //10 is back right
   private final CANcoder mAzimuthEncoder4 = new CANcoder(11); //9 is back left
 
-  private final SwerveModuleV3 Module1 = new SwerveModuleV3(mAzimuth1, mDriveMotor1, new Translation2d(0.29845, -0.29845), "Module 1", mAzimuthEncoder1);
-  private final SwerveModuleV3 Module2 = new SwerveModuleV3(mAzimuth2, mDriveMotor2, new Translation2d(-0.29845, -0.29845), "Module 2", mAzimuthEncoder2);
-  private final SwerveModuleV3 Module3 = new SwerveModuleV3(mAzimuth3, mDriveMotor3, new Translation2d(-0.29845, 0.29845), "Module 3", mAzimuthEncoder3);
-  private final SwerveModuleV3 Module4 = new SwerveModuleV3(mAzimuth4, mDriveMotor4, new Translation2d(0.29845,  0.29845), "Module 4", mAzimuthEncoder4);
+  private final SwerveModuleV3 Module1 = new SwerveModuleV3(mAzimuth1, mDriveMotor1, new Translation2d(0.29845, 0.29845), "Module 1", mAzimuthEncoder1);
+  private final SwerveModuleV3 Module2 = new SwerveModuleV3(mAzimuth2, mDriveMotor2, new Translation2d(0.29845, -0.29845), "Module 2", mAzimuthEncoder2);
+  private final SwerveModuleV3 Module3 = new SwerveModuleV3(mAzimuth3, mDriveMotor3, new Translation2d(-0.29845, -0.29845), "Module 3", mAzimuthEncoder3);
+  private final SwerveModuleV3 Module4 = new SwerveModuleV3(mAzimuth4, mDriveMotor4, new Translation2d(-0.29845,  0.29845), "Module 4", mAzimuthEncoder4);
 
   private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
@@ -81,32 +85,49 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem() {
    gyro.reset();
 
-    // Configure AutoBuilder last
-  //   AutoBuilder.configureHolonomic(
-  //           mSwerveDrive::getPose, // Robot pose supplier
-  //           mSwerveDrive::resetPosePathplanner, // Method to reset odometry (will be called if your auto has a starting pose)
-  //           mSwerveDrive::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-  //           mSwerveDrive::drivePathplanner, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-  //           new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-  //                   new PIDConstants(3.8, 0.0, 0), // Translation PID constants
-  //                   new PIDConstants(3.5, 0.0, 0), // Rotation PID constants
-  //                   5.059, // Max module speed, in m/s
-  //                   0.4572, // Drive base radius in meters. Distance from robot center to furthest module.
-  //                   new ReplanningConfig() // Default path replanning config. See the API for the options here
-  //           ),
-  //           () -> {
-  //             // Boolean supplier that controls when the path will be mirrored for the red alliance
-  //             // This will flip the path being followed to the red side of the field.
-  //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+   final RobotConfig ppConfig =
+      new RobotConfig(
+          70.0,
+          6.8,
+          new ModuleConfig(
+              0.0508,
+              5.06,
+              1,
+              DCMotor.getNEO(1), 
+              6.12,
+              40,
+              1),
+              new Translation2d[] {
+                new Translation2d(0.29845, -0.29845),
+                new Translation2d(-0.29845, -0.29845),
+                new Translation2d(-0.29845, 0.29845),
+                new Translation2d(0.29845, 0.29845)
+              });
 
-  //             var alliance = DriverStation.getAlliance();
-  //             if (alliance.isPresent()) {
-  //               return alliance.get() == DriverStation.Alliance.Red;
-  //             }
-  //             return false;
-  //           },
-  //           this // Reference to this subsystem to set requirements
-  // );
+
+    // Configure AutoBuilder last
+    AutoBuilder.configure(
+            mSwerveDrive::getPose, // Robot pose supplier
+            mSwerveDrive::resetPosePathplanner, // Method to reset odometry (will be called if your auto has a starting pose)
+            mSwerveDrive::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> mSwerveDrive.drivePathplanner(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(3.8, 0.0, 0), // Translation PID constants
+                    new PIDConstants(3.5, 0.0, 0) // Rotation PID constants
+            ),ppConfig,
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+  );
   }
 
   @Override

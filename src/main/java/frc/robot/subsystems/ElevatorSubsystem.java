@@ -30,25 +30,33 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final RelativeEncoder mElevatorEncoder;
   private final SparkClosedLoopController mElevatorPID;
 
-  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(600, 600));
+  private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(2000, 110));
   private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
   private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+
+  public static int elevatorLevel = 0; 
 
   public ElevatorSubsystem() {
     //Configure elevator motor 1 
     elevatorOneConfig.idleMode(IdleMode.kBrake);
-    elevatorOneConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.3, 0, 0); 
+    elevatorOneConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.2, 0, 0); 
     elevatorOneConfig.encoder.positionConversionFactor(1);//(360.0/(60.0));
     elevatorOneConfig.encoder.velocityConversionFactor(1); //(360.0/(60.0*10));
+    elevatorOneConfig.smartCurrentLimit(30);
     elevatorOneSparkMax.configure(elevatorOneConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
-
     //Set initial encoder position to 0
     mElevatorEncoder = elevatorOneSparkMax.getEncoder();
     mElevatorEncoder.setPosition(0);
     mElevatorPID = elevatorOneSparkMax.getClosedLoopController();
 
+    elevatorTwoConfig.idleMode(IdleMode.kBrake);
+    //elevatorTwoConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1, 0, 0); 
+    elevatorTwoConfig.encoder.positionConversionFactor(1);//(360.0/(60.0));
+    elevatorTwoConfig.encoder.velocityConversionFactor(1); //(360.0/(60.0*10));
+    elevatorTwoConfig.smartCurrentLimit(30);
+    elevatorTwoConfig.follow(14);
     // Configure motor 2 to follow motor 1
-    elevatorTwoSparkMax.configure(elevatorOneConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    elevatorTwoSparkMax.configure(elevatorTwoConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -69,19 +77,34 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void doNothing(){}
     
+    public void setLevel(int level){
+      elevatorLevel = level;
+    }
+    public Command setLevelCommand(int level){
+      return this.runEnd(() ->setLevel(level), () ->doNothing());
+    }
     public Command elevatorUp(int level){
       // move the elevator up
       if (level == 1){
-        return this.startEnd(() -> setPosistion(1), () -> doNothing()).until(() -> moveInPosistion());
+        elevatorLevel = 1; 
+        return this.startEnd(() -> setPosistion(33), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 2){
-        return this.startEnd(() -> setPosistion(2), () -> doNothing()).until(() -> moveInPosistion());
+        elevatorLevel = 2; 
+        return this.startEnd(() -> setPosistion(48), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 3){
-        return this.startEnd(() -> setPosistion(3), () -> doNothing()).until(() -> moveInPosistion());
+        elevatorLevel = 3; 
+        return this.startEnd(() -> setPosistion(90), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 4){
-        return this.startEnd(() -> setPosistion(4), () -> doNothing()).until(() -> moveInPosistion());
+        elevatorLevel = 4;
+        //160 is max!!! Stuff will probably break if you go above it
+        return this.startEnd(() -> setPosistion(160), () -> doNothing()).until(() -> moveInPosistion());
+      }
+      else if (level == 5){
+        elevatorLevel = 5;
+        return this.startEnd(() -> setPosistion(65), () -> doNothing()).until(() -> moveInPosistion());
       }
       else{
         return this.startEnd(() -> setPosistion(0), () -> doNothing()).until(() -> moveInPosistion());
@@ -90,6 +113,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Command elevatorDown(){
       // move the elevator down
+      elevatorLevel = 0;
       return this.startEnd(() -> setPosistion(0), () -> doNothing()).until(() -> moveInPosistion());
     }
 

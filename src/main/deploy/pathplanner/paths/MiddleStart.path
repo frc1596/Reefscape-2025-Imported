@@ -1,27 +1,27 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
-        "x": 2.28,
-        "y": 4.06
+        "x": 7.159602272727272,
+        "y": 4.089815340909091
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.28,
-        "y": 4.06
+        "x": 6.775585175552666,
+        "y": 4.072106631989596
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.337838772369657,
-        "y": 4.094203811817293
+        "x": 5.728771131339402,
+        "y": 4.089815340909091
       },
       "prevControl": {
-        "x": 1.3378387723696572,
-        "y": 4.094203811817293
+        "x": 6.299334375069279,
+        "y": 4.089815340909091
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,23 +30,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.1,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 155.46227152342215,
-    "rotateFast": false
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Deep notes right start",
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

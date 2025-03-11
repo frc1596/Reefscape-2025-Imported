@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.ElevatorSubsystem;
+//import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -59,7 +61,7 @@ public class DriveCommand extends Command {
     double rotVel = 0;
     double driveDirection = 0;
     double driveMagnitude = 0;
-
+    
     yVel = mController.getLeftY()*0.25;
     xVel = mController.getLeftX()*0.25;
 
@@ -68,9 +70,16 @@ public class DriveCommand extends Command {
     driveMagnitude = mController.getRightTriggerAxis();
     yVel = Math.sin(driveDirection) * driveMagnitude;
     xVel = Math.cos(driveDirection) * driveMagnitude;
-
-    // slow down when right bumper
     
+//     if (ElevatorSubsystem.elevatorLevel >= 1){
+//       driveFactor =- 0.02; 
+//       driveFactor = Math.max(driveFactor, 0.1);
+//     }
+//     else{
+//         driveFactor = 1.0;
+//     }
+// SmartDashboard.putNumber("Drive Factor", driveFactor);
+// SmartDashboard.putNumber("Elejiojovatpr level", ElevatorSubsystem.elevatorLevel);
 
     //rumble when 20 seconds left
     if (DriverStation.isTeleop() && (DriverStation.getMatchTime() < 20.0) && (DriverStation.getMatchTime() > 19.0)) {
@@ -80,10 +89,11 @@ public class DriveCommand extends Command {
       mController.setRumble(RumbleType.kLeftRumble, 0);
       mController.setRumble(RumbleType.kRightRumble, 0);
     }
+    rotVel = -mController.getRightX();
 
     yVel = yHelper.setInput(yVel).applyPower(2).value;
     xVel = xHelper.setInput(xVel).applyPower(2).value;
-    rotVel = rotHelper.setInput(rotVel).applyPower(2).value;
+    rotVel = rotHelper.setInput(rotVel).applyPower(3).value;
 
     yVel = yVel * driveFactor;
     xVel = xVel * driveFactor;
