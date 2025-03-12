@@ -96,16 +96,6 @@ azimuthConfig.closedLoop
 
 
 mDriveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-// Get PIDs
-
-
-        // Configure drive absolute encoder
-       // mAzimuthAbsoluteEncoder.setPositionConversionFactor(1.0);
-        //mAzimuthAbsoluteEncoder.setInverted(true);
-        //mAzimuthAbsoluteEncoder.setAverageDepth(1);
-        
-        // Configure azimuth incremental encoder
-        // Configure drive PID
 
 
 

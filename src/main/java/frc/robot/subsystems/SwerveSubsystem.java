@@ -4,22 +4,16 @@ import org.deceivers.swerve.SwerveDrive;
 import org.deceivers.swerve.SwerveModuleV3;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-//import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
-// import com.pathplanner.lib.path.PathPlannerTrajectory;
-// import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-// import com.pathplanner.lib.util.PIDConstants;
-// import com.pathplanner.lib.util.ReplanningConfig;
+
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.revrobotics.spark.SparkMax;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -32,21 +26,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.geometry.Rotation2d;
-//import edu.wpi.first.wpilibj.interfaces.Gyro;
-//import com.studica.frc.AHRS;
 
-//import com.kauailabs.navx.frc.AHRS;
-
-//import com.studica.frc.AHRS;
-//import com.studica.frc.AHRS.NavXComType;
-
-//import edu.wpi.first.wpilibj.interfaces.Gyro;
-
-/**
- * Basic simulation of a swerve subsystem with the methods needed by PathPlanner
- */
 public class SwerveSubsystem extends SubsystemBase {
   private final SparkMax mDriveMotor1 = new SparkMax(2, MotorType.kBrushless);
   private final SparkMax mDriveMotor2 = new SparkMax(4, MotorType.kBrushless);
@@ -57,11 +38,13 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SparkMax mAzimuth2 = new SparkMax(3, MotorType.kBrushless);
   private final SparkMax mAzimuth3 = new SparkMax(5, MotorType.kBrushless);
   private final SparkMax mAzimuth4 = new SparkMax(7, MotorType.kBrushless);
-  private final CANcoder mAzimuthEncoder1 = new CANcoder(10); //12 is front right
-  private final CANcoder mAzimuthEncoder2 = new CANcoder(12); //11 is front left
-  private final CANcoder mAzimuthEncoder3 = new CANcoder(9);  //10 is back right
-  private final CANcoder mAzimuthEncoder4 = new CANcoder(11); //9 is back left
 
+  private final CANcoder mAzimuthEncoder1 = new CANcoder(10); 
+  private final CANcoder mAzimuthEncoder2 = new CANcoder(12); 
+  private final CANcoder mAzimuthEncoder3 = new CANcoder(9);  
+  private final CANcoder mAzimuthEncoder4 = new CANcoder(11); 
+
+  //corners are done like a graph. Positive x,y in quadrant 1, and so on
   private final SwerveModuleV3 Module1 = new SwerveModuleV3(mAzimuth1, mDriveMotor1, new Translation2d(0.29845, 0.29845), "Module 1", mAzimuthEncoder1);
   private final SwerveModuleV3 Module2 = new SwerveModuleV3(mAzimuth2, mDriveMotor2, new Translation2d(0.29845, -0.29845), "Module 2", mAzimuthEncoder2);
   private final SwerveModuleV3 Module3 = new SwerveModuleV3(mAzimuth3, mDriveMotor3, new Translation2d(-0.29845, -0.29845), "Module 3", mAzimuthEncoder3);
@@ -73,18 +56,11 @@ public class SwerveSubsystem extends SubsystemBase {
   private SimSwerveModule[] modules;
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
-
-  //public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
-
-  //private final AHRS gyro = new AHRS(SPI.Port.kMXP);
-  //private final AHRS gyro = new AHRS(SPI.Port.kMXP);
-
-
-  //private Field2d field = new Field2d();
   
   public SwerveSubsystem() {
    gyro.reset();
 
+   //pathplanner config,
    final RobotConfig ppConfig =
       new RobotConfig(
           70.0,
@@ -159,10 +135,6 @@ public class SwerveSubsystem extends SubsystemBase {
       mSwerveDrive.stop();
     }
   
-    // public void followPath(double initTime, PathPlannerTrajectory pptrajectory, boolean useLimelight){
-    // //  mSwerveDrive.followPath(initTime, pptrajectory, useLimelight);
-    // }
-  
     public void setLocation(double x, double y, double angle){
       mSwerveDrive.setLocation(x, y, angle);
     }
@@ -177,7 +149,6 @@ public class SwerveSubsystem extends SubsystemBase {
   public double getRotation() {
     //SmartDashboard.putNumber("Gyro", -gyro.getAngle());
     return -gyro.getAngle();
-    //return 0;
  }
   public void resetPose(Pose2d pose) {
     odometry.resetPosition(new Rotation2d(gyro.getYaw()), getPositions(), pose);

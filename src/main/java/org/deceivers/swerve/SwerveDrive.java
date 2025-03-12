@@ -175,23 +175,7 @@ public class SwerveDrive {
 
         return mSwerveDrivePoseEstimator.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
     }
-/*
-    public void followPath(double startTime, com.pathplanner.lib.path.PathPlannerTrajectory pptrajectory, boolean useLimelight){
-        com.pathplanner.lib.path.PathPlannerTrajectory.State goal = pptrajectory.sample(Timer.getFPGATimestamp() - startTime);
 
-        ChassisSpeeds speeds = mDriveController.calculate(getPose(), goal, Rotation2d.fromDegrees(goal.targetHolonomicRotation.getDegrees()));
-
-        driveClosedLoop(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
-
-        double[] pathGoalArray = {goal.positionMeters.getX(), goal.positionMeters.getY(), goal.targetHolonomicRotation.getDegrees()};
-        pathGoalPose.set(pathGoalArray);
-        SmartDashboard.putNumber("GoalX", goal.positionMeters.getX());
-        SmartDashboard.putNumber("GoalY", goal.positionMeters.getY());
-        SmartDashboard.putNumber("GoalRotation", goal.heading.getRotations());
-        double[] pathErrorArray = {goal.positionMeters.getX()-getPose().getX(), goal.positionMeters.getY()-getPose().getY(), goal.targetHolonomicRotation.getDegrees() - getPose().getRotation().getDegrees()};
-        pathGoalPoseError.set(pathErrorArray);
-    }
-*/
     public void log(){
         Arrays.stream(mModules).forEach(SwerveModule::log);
         double[] swervePoseArray = {getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()};

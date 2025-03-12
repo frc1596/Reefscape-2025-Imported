@@ -46,28 +46,17 @@ public class IntakePivotSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // Calculate the set point for the elevator
+    // Calculate the set point for the pivot
     m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
 
     // New posistion to the PID controller
     mIntakePID.setReference(m_setpoint.position, com.revrobotics.spark.SparkBase.ControlType.kPosition);
   }
 
-    // set target position for the elevator
+    // set target position for the pivot
     public void setAngle(double angle) {
         m_goal = new TrapezoidProfile.State(angle, 0);
     }
-
-    // public command startIntake() {
-    //    // return this.startEnd(() -> intakePivotSparkMax.set(0.5), () -> intakePivotSparkMax.set(0));
-       
-    // }
-
-    // public Command intakeOut()
-    // {
-    //     // return this.startEnd(() -> intakePivotSparkMax.set(-0.5), () -> intakePivotSparkMax.set(0));
-    //     //return 0; 
-    // }
 
     public void doNothing(){}
     

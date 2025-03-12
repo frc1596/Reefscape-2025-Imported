@@ -33,7 +33,6 @@ public class DriveCommand extends Command {
     private SlewRateLimiter xfilter = new SlewRateLimiter(3);
     private SlewRateLimiter yfilter = new SlewRateLimiter(3);
 
-
     private boolean lastScan;
     private double driveFactor = 1;
 
