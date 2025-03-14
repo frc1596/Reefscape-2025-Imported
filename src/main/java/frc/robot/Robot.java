@@ -298,7 +298,7 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     humanStation.whileTrue(elevator.elevatorUp(5).alongWith(intakePivotSubsystem.intakePivot(1.8)));
 
     // algae
-    algaeGroundIntake.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(-4)));
+    algaeGroundIntake.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(-3.8)));
     algaeLevelOneIntake.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-3)));
     algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(-3)));
 
@@ -308,7 +308,7 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     intakeIn.whileTrue(intake.runIntakes(0.10));
     // .until( ()-> intake.coralSensor.get() == true)
     intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));
-    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.6));
+    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.4));
 
   }
 
