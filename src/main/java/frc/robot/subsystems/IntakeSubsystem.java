@@ -39,6 +39,11 @@ public class IntakeSubsystem extends SubsystemBase{
         intakeMotor.set(0);
     }
 
+    public double getIntakeSpeed()
+    {
+        return(intakeMotor.get());
+    }
+
     public void reverseIntake(double speed)
     {
         intakeMotor.set(speed);

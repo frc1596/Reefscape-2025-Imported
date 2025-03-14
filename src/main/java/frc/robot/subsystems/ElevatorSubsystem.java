@@ -116,6 +116,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean moveInPosistion() {
-      return Math.abs(m_setpoint.position - m_goal.position) < 5;
+      return Math.abs(m_setpoint.position - m_goal.position) < 2;
     }
 }

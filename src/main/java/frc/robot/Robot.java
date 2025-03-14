@@ -7,6 +7,7 @@ package frc.robot;
 //import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -60,7 +61,7 @@ public class Robot extends TimedRobot {
   AddressableLED m_led = new AddressableLED(9);
   AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
 
-  // Limelight limelight = new Limelight();
+  Limelight limelight = new Limelight();
   // PowerDistribution examplePD = new PowerDistribution();
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -94,6 +95,8 @@ public class Robot extends TimedRobot {
     NamedCommands.registerCommand("Pivot to Station", intakePivotSubsystem.intakePivot(-1));
     NamedCommands.registerCommand("Pivot to L2L3", intakePivotSubsystem.intakePivot(0));
     NamedCommands.registerCommand("Pivot to L1", intakePivotSubsystem.intakePivot(-1));
+
+    FollowPathCommand.warmupCommand().schedule();
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -141,7 +144,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // SmartDashboard.putNumber("FID", limelight.getFid());
+     SmartDashboard.putNumber("FID", limelight.getFid());
     // SmartDashboard.putNumber("Intake Current", examplePD.getCurrent(2));
 
   }
@@ -175,25 +178,10 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove`
     // this line or comment it out.
     
-    //sets the LED color based on which alliance we're on
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      if (alliance.get() == DriverStation.Alliance.Red) {
-        for (int i = 0; i < 96; i++) {
-          m_ledBuffer.setRGB(i, 0, 100, 0); // grb
-        }
-        m_led.setData(m_ledBuffer);
-      } else {
-        for (int i = 0; i < 96; i++) {
-          m_ledBuffer.setRGB(i, 0, 0, 100); // grb
-        }
-        m_led.setData(m_ledBuffer);
-      }
 
-    }
 
     //continuously runs the DriveCommand. If some other command requires the swerve, that one will take priority
-    swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController));
+    swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController, limelight));
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
@@ -205,6 +193,41 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    //sets the LED color based on which alliance we're on
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if (alliance.get() == DriverStation.Alliance.Red) {
+        for (int i = 0; i < 96; i++) {
+          m_ledBuffer.setRGB(i, 0, 100, 0); // grb
+        }
+      } else {
+        for (int i = 0; i < 96; i++) {
+          m_ledBuffer.setRGB(i, 0, 0, 100); // grb
+        }
+      }
+
+      //if intaking or outaking, set colors depending on direction
+      if(intake.getIntakeSpeed() != 0){
+        if(intake.getIntakeSpeed() > 0){
+          for (int i = 0; i < 94; i += 2) {
+            m_ledBuffer.setRGB(i, 100, 0, 0); // grb
+          }
+        } else{
+          for (int i = 0; i < 94; i += 2) {
+            m_ledBuffer.setRGB(i, 0, 80, 80); // grb
+          }
+        }
+      } 
+
+      //if auto aiming, set every other LED white
+      if(driverController.getLeftBumperButton()){
+        for (int i = 1; i < 94; i += 2) {
+          m_ledBuffer.setRGB(i, 80, 80, 80); // grb
+        }
+      }
+
+      m_led.setData(m_ledBuffer);
+    }
   }
 
   @Override
@@ -246,7 +269,7 @@ public class Robot extends TimedRobot {
     Trigger elevatorLevelOne = operatorController.a().and(operatorController.povLeft().negate());
     Trigger elevatorDown = operatorController.povDown();
 
-    Trigger humanStation = operatorController.povUp();
+    Trigger humanStation = operatorController.start();
 
     // intake and out
     Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());
@@ -256,10 +279,12 @@ public class Robot extends TimedRobot {
     Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povLeft());
 
     // harvesting algae
-    Trigger algaeGroundIntake = operatorController.povLeft().and(operatorController.a());
-    Trigger algaeLevelOneIntake = operatorController.povLeft().and(operatorController.b());
-    Trigger algaeLevelTwoIntake = operatorController.povLeft().and(operatorController.x());
-
+   // Trigger algaeGroundIntake = operatorController.povLeft().and(operatorController.a());
+    // Trigger algaeLevelOneIntake = operatorController.povLeft().and(operatorController.b());
+    // Trigger algaeLevelTwoIntake = operatorController.povLeft().and(operatorController.x());
+Trigger algaeGroundIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.a());
+Trigger algaeLevelOneIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.b());
+Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.x());
     // +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
 
     // Bindings

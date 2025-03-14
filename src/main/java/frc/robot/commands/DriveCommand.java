@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.ElevatorSubsystem;
-//import frc.robot.subsystems.ElevatorSubsystem;
+
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -22,9 +21,13 @@ public class DriveCommand extends Command {
     public CommandXboxController mController2;
     public Limelight mLimelight;
 
-    private PIDController limController = new PIDController(0.3, 0.0, 0.0);
+    private PIDController xController = new PIDController(0.03, 0.0, 0.0);
+    private PIDController yController = new PIDController(0.03, 0.0, 0.0);
     private PIDController autoAimController = new PIDController(0.007,0,0);
+
     private LinearFilter aimFilter = LinearFilter.movingAverage(3);
+    private LinearFilter xFilter2 = LinearFilter.movingAverage(3);
+    private LinearFilter yFilter2 = LinearFilter.movingAverage(3);
 
     private JoystickHelper xHelper = new JoystickHelper(0);
     private JoystickHelper yHelper = new JoystickHelper(0);
@@ -36,14 +39,13 @@ public class DriveCommand extends Command {
     private boolean lastScan;
     private double driveFactor = 1;
 
-    public DriveCommand(SwerveSubsystem swerve, XboxController XboxController, CommandXboxController XboxController2) {
+    public DriveCommand(SwerveSubsystem swerve, XboxController XboxController, CommandXboxController XboxController2, Limelight limelight) {
         mSwerve = swerve;
-        // mLimelight = limelight;
+        mLimelight = limelight;
         mController2 = XboxController2;
         mController = XboxController;
 
         autoAimController.enableContinuousInput(-360, 360);
-        limController.enableContinuousInput(-Math.PI, Math.PI);
 
         addRequirements(mSwerve);
       }
@@ -100,24 +102,14 @@ public class DriveCommand extends Command {
 
     SmartDashboard.putNumber("Tx", LimelightHelpers.getTX("limelight"));
 
-    double joystickMagnitude = Math.sqrt((mController.getRightY() * mController.getRightY()) + (mController.getRightX() * mController.getRightX()));
+    //double joystickMagnitude = Math.sqrt((mController.getRightY() * mController.getRightY()) + (mController.getRightX() * mController.getRightX()));
   
-    // if(mController2.getLeftBumper() && !(mLimelight.getFid() == -1)){
+     if(mController.getLeftBumper() && !(mLimelight.getFid() == -1)){
+        rotVel = -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
+        xVel = xController.calculate(xFilter2.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getX()),0);
+        yVel = yController.calculate(yFilter2.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getY()),0);
+     }
     //   if(mLimelight.getFid() == 4 || (mLimelight.getFid() == 7)){
-
-    //     rotVel = -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
-    //   }
-    // }
-    // else if (joystickMagnitude > .02) {
-    //     rotVel = mController.getRightX();
-    //     rotVel = rotHelper.setInput(rotVel).applyPower(2).value;
-
-    //   //  rotVel = -rotationController.calculate(Rotation2d.fromDegrees(mSwerve.getRotation()).getRadians(),
-    //   //     joystickAngle.getRadians());
-    //   if (Math.abs(rotVel) > joystickMagnitude) {
-    //     rotVel = joystickMagnitude * Math.sigma(rotVel);
-    //   }
-    //}
 
     //rezero
     if (mController.getRawButton(7) & !lastScan) {
