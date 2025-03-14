@@ -39,6 +39,8 @@ public class DriveCommand extends Command {
     private boolean lastScan;
     private double driveFactor = 1;
 
+    public static boolean algaeTrack = false;
+
     public DriveCommand(SwerveSubsystem swerve, XboxController XboxController, CommandXboxController XboxController2, Limelight limelight) {
         mSwerve = swerve;
         mLimelight = limelight;
@@ -100,16 +102,28 @@ public class DriveCommand extends Command {
     xVel = xVel * driveFactor;
     rotVel = rotVel * driveFactor;
 
-    SmartDashboard.putNumber("Tx", LimelightHelpers.getTX("limelight"));
+    //SmartDashboard.putNumber("Tx", LimelightHelpers.getTX("limelight"));
 
     //double joystickMagnitude = Math.sqrt((mController.getRightY() * mController.getRightY()) + (mController.getRightX() * mController.getRightX()));
   
-     if(mController.getLeftBumper() && !(mLimelight.getFid() == -1)){
+    if(algaeTrack){
+      LimelightHelpers.setPipelineIndex("limelight", 1);
+      if(LimelightHelpers.getTV("limelight")){
+        rotVel = rotVel + -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
+      }
+     }
+
+     if(mController.getLeftBumper() && LimelightHelpers.getTV("limelight")){
+      algaeTrack = false;
+
+      LimelightHelpers.setPipelineIndex("limelight", 0);
         rotVel = -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
         xVel = xController.calculate(xFilter2.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getX()),0);
         yVel = yController.calculate(yFilter2.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getY()),0);
      }
     //   if(mLimelight.getFid() == 4 || (mLimelight.getFid() == 7)){
+
+
 
     //rezero
     if (mController.getRawButton(7) & !lastScan) {

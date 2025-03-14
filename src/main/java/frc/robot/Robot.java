@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-
+Trigger intakeAlgaeIn;
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -193,6 +193,11 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    //sets the limelight and drivetrain to algae tracking mode
+    if(intakeAlgaeIn.getAsBoolean() && DriveCommand.algaeTrack == false){
+      DriveCommand.algaeTrack = true;
+    } //to disable the algae tracking, driver needs to hit left bumper
+
     //sets the LED color based on which alliance we're on
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
@@ -219,11 +224,15 @@ public class Robot extends TimedRobot {
         }
       } 
 
-      //if auto aiming, set every other LED white
+      //if auto aiming, set every other LED white, if aiming for algae make them cyan
       if(driverController.getLeftBumperButton()){
         for (int i = 1; i < 94; i += 2) {
           m_ledBuffer.setRGB(i, 80, 80, 80); // grb
-        }
+        } 
+      }else if(DriveCommand.algaeTrack){
+        for (int i = 1; i < 96; i += 1) {
+          m_ledBuffer.setRGB(i, 80, 0, 80); // grb
+        } 
       }
 
       m_led.setData(m_ledBuffer);
@@ -275,7 +284,7 @@ public class Robot extends TimedRobot {
     Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());
     Trigger intakeInOverride = operatorController.rightBumper().and(operatorController.rightTrigger());
     Trigger intakeOut = operatorController.leftBumper().and(operatorController.povLeft().negate());
-    Trigger intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povLeft());
+     intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povLeft());
     Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povLeft());
 
     // harvesting algae
@@ -286,7 +295,6 @@ Trigger algaeGroundIntake = operatorController.povCenter().negate().and(operator
 Trigger algaeLevelOneIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.b());
 Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.x());
     // +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
-
     // Bindings
     // coral
     elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
@@ -307,8 +315,9 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     intakeOut.whileTrue(intake.runIntakes(-0.10));
     intakeIn.whileTrue(intake.runIntakes(0.10));
     // .until( ()-> intake.coralSensor.get() == true)
+    // .until(intake.coralSensor::get)
     intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));
-    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.4));
+    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.35));
 
   }
 
