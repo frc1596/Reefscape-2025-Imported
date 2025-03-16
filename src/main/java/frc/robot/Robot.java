@@ -54,6 +54,8 @@ public class Robot extends TimedRobot {
   private final ElevatorSubsystem elevator = new ElevatorSubsystem();
   private final IntakePivotSubsystem intakePivotSubsystem = new IntakePivotSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
+  //public static DigitalInput coralSensor = new DigitalInput(7);
+
 
   XboxController driverController = new XboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
@@ -62,9 +64,11 @@ public class Robot extends TimedRobot {
   AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
 
   Limelight limelight = new Limelight();
+
   // PowerDistribution examplePD = new PowerDistribution();
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
+  public static DigitalInput coralSensor = new DigitalInput(7);
 
 Trigger intakeAlgaeIn;
   /**
@@ -144,7 +148,7 @@ Trigger intakeAlgaeIn;
 
   @Override
   public void disabledPeriodic() {
-     SmartDashboard.putNumber("FID", limelight.getFid());
+    // SmartDashboard.putNumber("FID", limelight.getFid());
     // SmartDashboard.putNumber("Intake Current", examplePD.getCurrent(2));
 
   }
@@ -179,7 +183,6 @@ Trigger intakeAlgaeIn;
     // this line or comment it out.
     
 
-
     //continuously runs the DriveCommand. If some other command requires the swerve, that one will take priority
     swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController, limelight));
 
@@ -192,6 +195,7 @@ Trigger intakeAlgaeIn;
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    SmartDashboard.putBoolean("Sensorrobot:", coralSensor.get()); 
 
     //sets the limelight and drivetrain to algae tracking mode
     if(intakeAlgaeIn.getAsBoolean() && DriveCommand.algaeTrack == false){
@@ -203,7 +207,7 @@ Trigger intakeAlgaeIn;
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Red) {
         for (int i = 0; i < 96; i++) {
-          m_ledBuffer.setRGB(i, 0, 100, 0); // grb
+          m_ledBuffer.setRGB(i, 0, 255, 0); // grb
         }
       } else {
         for (int i = 0; i < 96; i++) {
@@ -215,7 +219,7 @@ Trigger intakeAlgaeIn;
       if(intake.getIntakeSpeed() != 0){
         if(intake.getIntakeSpeed() > 0){
           for (int i = 0; i < 94; i += 2) {
-            m_ledBuffer.setRGB(i, 100, 0, 0); // grb
+            m_ledBuffer.setRGB(i, 255, 255, 0); // grb
           }
         } else{
           for (int i = 0; i < 94; i += 2) {
@@ -227,7 +231,7 @@ Trigger intakeAlgaeIn;
       //if auto aiming, set every other LED white, if aiming for algae make them cyan
       if(driverController.getLeftBumperButton()){
         for (int i = 1; i < 94; i += 2) {
-          m_ledBuffer.setRGB(i, 80, 80, 80); // grb
+          m_ledBuffer.setRGB(i, 255, 255, 0); // grb
         } 
       }else if(DriveCommand.algaeTrack){
         for (int i = 1; i < 96; i += 1) {
@@ -313,7 +317,8 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     // intake and out
     // intakeIn.onTrue(intake.runIntakes(0.10));
     intakeOut.whileTrue(intake.runIntakes(-0.10));
-    intakeIn.whileTrue(intake.runIntakes(0.10));
+    intakeIn.whileTrue(intake.runIntakes(0.10).until( ()-> coralSensor.get()));
+    intakeInOverride.whileTrue(intake.runIntakes(0.10));
     // .until( ()-> intake.coralSensor.get() == true)
     // .until(intake.coralSensor::get)
     intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));

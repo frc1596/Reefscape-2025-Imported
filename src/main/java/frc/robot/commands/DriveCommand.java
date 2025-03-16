@@ -21,8 +21,8 @@ public class DriveCommand extends Command {
     public CommandXboxController mController2;
     public Limelight mLimelight;
 
-    private PIDController xController = new PIDController(0.03, 0.0, 0.0);
-    private PIDController yController = new PIDController(0.03, 0.0, 0.0);
+    private PIDController xController = new PIDController(0.3, 0.0, 0.0);
+    private PIDController yController = new PIDController(0.3, 0.0, 0.0);
     private PIDController autoAimController = new PIDController(0.007,0,0);
 
     private LinearFilter aimFilter = LinearFilter.movingAverage(3);
@@ -106,21 +106,25 @@ public class DriveCommand extends Command {
 
     //double joystickMagnitude = Math.sqrt((mController.getRightY() * mController.getRightY()) + (mController.getRightX() * mController.getRightX()));
   
-    if(algaeTrack){
-      LimelightHelpers.setPipelineIndex("limelight", 1);
-      if(LimelightHelpers.getTV("limelight")){
-        rotVel = rotVel + -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
-      }
-     }
+    // if(algaeTrack){
+    //   LimelightHelpers.setPipelineIndex("limelight", 1);
+    //   if(LimelightHelpers.getTV("limelight")){
+    //     rotVel = rotVel + -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
+    //   }
+    //  }
 
      if(mController.getLeftBumper() && LimelightHelpers.getTV("limelight")){
       algaeTrack = false;
 
       LimelightHelpers.setPipelineIndex("limelight", 0);
-        rotVel = -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTX("limelight")),0);
+        rotVel = -autoAimController.calculate(aimFilter.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getRotation().getY()),Math.PI);
         xVel = xController.calculate(xFilter2.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getX()),0);
-        yVel = yController.calculate(yFilter2.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getY()),0);
-     }
+        yVel = yController.calculate(yFilter2.calculate(LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getY()),0.2);
+ SmartDashboard.putNumber("X Offset", LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getX());
+ SmartDashboard.putNumber("Y Offset", LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getY());
+ SmartDashboard.putNumber("Angle Offset", LimelightHelpers.getTargetPose3d_RobotSpace("limelight").getRotation().getAngle());
+
+      }
     //   if(mLimelight.getFid() == 4 || (mLimelight.getFid() == 7)){
 
 
