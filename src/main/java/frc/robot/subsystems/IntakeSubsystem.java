@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
@@ -54,19 +55,12 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public Command runIntakes(double speed)
     {
-       // SmartDashboard.putBoolean("Sensor Input SUBSYS", coralSensor.get());
-        // if (Robot.coralSensorBool)
-        // {
-        //     return this.startEnd(() -> startIntake(0), () -> stopIntake());  
-        // } 
-        // else
-        // {
-        //     return this.startEnd(() -> startIntake(.10), () -> stopIntake());  
-        // }
-    //    SmartDashboard.putBoolean("SensorRunIntakes:", coralSensor.get()); 
-       //return this.startEnd(() -> startIntake(0.1), () -> doNothing()).until(() -> getSensor()).andThen(stopIntakes()); 
        return this.startEnd(() -> startIntake(speed), () -> stopIntake());
+    }
 
+    public Command runIntakesAuto(double speed)
+    {
+       return this.startEnd(() -> startIntake(speed), () -> Commands.waitSeconds(1));
     }
 
     public Command stopIntakes()

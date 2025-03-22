@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftStart"
+            "pathName": "MiddleStart"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ElevatorL2"
+            "name": "ElevatorL3"
           }
         },
         {
@@ -42,22 +42,21 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "GroundAlgae"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LeftStart2"
-                }
-              }
-            ]
+            "pathName": "MiddleAlgaeShift"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlgaeL2"
           }
         }
       ]

@@ -93,7 +93,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
       else if (level == 3){
         elevatorLevel = 3; 
-        return this.startEnd(() -> setPosistion(90), () -> doNothing()).until(() -> moveInPosistion());
+        return this.startEnd(() -> setPosistion(91), () -> doNothing()).until(() -> moveInPosistion());
       }
       else if (level == 4){
         elevatorLevel = 4;

@@ -86,8 +86,8 @@ Trigger intakeAlgaeIn;
     m_led.start();
 
     //Named commands for the pathplanner auto
-    NamedCommands.registerCommand("Outtake", intake.runIntakes(0.1));
-    NamedCommands.registerCommand("Intake", intake.reverseIntakes(-0.1));
+    NamedCommands.registerCommand("Outtake", intake.runIntakesAuto(0.2));
+    NamedCommands.registerCommand("Intake", intake.runIntakesAuto(-0.3));
     NamedCommands.registerCommand("Stop Intake", intake.runIntakes(0));
 
     NamedCommands.registerCommand("Elevator Down", elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
@@ -95,6 +95,11 @@ Trigger intakeAlgaeIn;
     NamedCommands.registerCommand("ElevatorL2", elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     NamedCommands.registerCommand("ElevatorL3", elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     NamedCommands.registerCommand("ElevatorL4", elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.5)));
+    NamedCommands.registerCommand("AlgaeL2", elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-3)));
+    NamedCommands.registerCommand("AlgaeL3", elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(-3)));
+
+    NamedCommands.registerCommand("GroundAlgae", intakePivotSubsystem.intakePivot(-2).andThen(elevator.elevatorDown()).andThen(intake.runIntakesAuto(-0.3)));
+
 
     NamedCommands.registerCommand("Pivot to Station", intakePivotSubsystem.intakePivot(-1));
     NamedCommands.registerCommand("Pivot to L2L3", intakePivotSubsystem.intakePivot(0));
@@ -288,8 +293,8 @@ Trigger intakeAlgaeIn;
     Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());
     Trigger intakeInOverride = operatorController.rightBumper().and(operatorController.rightTrigger());
     Trigger intakeOut = operatorController.leftBumper().and(operatorController.povLeft().negate());
-     intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povLeft());
-    Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povLeft());
+     intakeAlgaeIn = operatorController.rightBumper().and(operatorController.povCenter().negate());
+    Trigger intakeAlgaeOut = operatorController.leftBumper().and(operatorController.povCenter().negate());
 
     // harvesting algae
    // Trigger algaeGroundIntake = operatorController.povLeft().and(operatorController.a());
@@ -301,7 +306,8 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     // +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
     // Bindings
     // coral
-    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
+
+    //elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
     elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
@@ -311,8 +317,8 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
 
     // algae
     algaeGroundIntake.whileTrue(elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(-3.8)));
-    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-3)));
-    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(-3)));
+    algaeLevelOneIntake.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(-2.7)));
+    algaeLevelTwoIntake.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(-2.7)));
 
     // intake and out
     // intakeIn.onTrue(intake.runIntakes(0.10));
@@ -321,8 +327,8 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     intakeInOverride.whileTrue(intake.runIntakes(0.10));
     // .until( ()-> intake.coralSensor.get() == true)
     // .until(intake.coralSensor::get)
-    intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.6));
-    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.35));
+    intakeAlgaeIn.whileTrue(intake.reverseIntakes(0.4));
+    intakeAlgaeOut.whileTrue(intake.runIntakes(-0.24));
 
   }
 
