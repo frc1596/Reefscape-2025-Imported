@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveCommand;
@@ -289,6 +290,8 @@ Trigger intakeAlgaeIn;
 
     Trigger humanStation = operatorController.start();
 
+Trigger bargeScore = operatorController.rightStick();
+
     // intake and out
     Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());
     Trigger intakeInOverride = operatorController.rightBumper().and(operatorController.rightTrigger());
@@ -307,7 +310,9 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     // Bindings
     // coral
 
-    //elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
+    
+    bargeScore.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(6)).andThen(intakePivotSubsystem.intakePivot(-2).raceWith(new WaitCommand(0.55)).andThen(intake.runIntakes(-1))));
+    elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
     elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     elevatorLevelOne.whileTrue(elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));

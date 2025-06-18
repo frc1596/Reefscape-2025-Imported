@@ -33,7 +33,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
     intakePivotConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(2.0, 0, 0.0); 
     intakePivotConfig.encoder.positionConversionFactor(1);//(360.0/(60.0));
     intakePivotConfig.encoder.velocityConversionFactor(1); //(360.0/(60.0*10));
-    intakePivotConfig.smartCurrentLimit(40);
+    intakePivotConfig.smartCurrentLimit(50);
     intakePivotSparkMax.configure(intakePivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
 
     //Set initial encoder position to 0

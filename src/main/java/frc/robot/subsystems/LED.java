@@ -12,7 +12,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LED extends SubsystemBase {
   /** Creates a new LED. */
-  private AddressableLED m_led0 = new AddressableLED(0);
+
+
+   AddressableLED m_led0 = new AddressableLED(0);
+
+
+
   private AddressableLEDBuffer m_ledBuffer0 = new AddressableLEDBuffer(560);
 
   private int i = 4;
@@ -94,14 +99,21 @@ public class LED extends SubsystemBase {
       } else {
         if(DriverStation.getAlliance().isPresent()){
           if(DriverStation.getAlliance().get() == Alliance.Blue){
-            for (var i = 0; i < m_ledBuffer0.getLength()-1; i = i + 1) {
-              m_ledBuffer0.setRGB(i, 0, 0, 200);
-            }
+
+rainbow();
+            // for (var i = 0; i < m_ledBuffer0.getLength()-1; i = i + 1) {
+            //   m_ledBuffer0.setRGB(i, 0, 0, 200);
+            // }
           }else{
+
+            
             if(DriverStation.getAlliance().get() == Alliance.Red){
-              for (var i = 0; i < m_ledBuffer0.getLength()-1; i = i + 1) {
-                m_ledBuffer0.setRGB(i, 200, 0, 0);
-              }
+              // for (var i = 0; i < m_ledBuffer0.getLength()-1; i = i + 1) {
+              //   m_ledBuffer0.setRGB(i, 200, 0, 0);
+              // }
+
+rainbow();
+              
             }
           }
         }
