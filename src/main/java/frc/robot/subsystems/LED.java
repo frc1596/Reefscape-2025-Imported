@@ -112,7 +112,7 @@ rainbow();
               //   m_ledBuffer0.setRGB(i, 200, 0, 0);
               // }
 
-rainbow();
+              rainbow();
               
             }
           }

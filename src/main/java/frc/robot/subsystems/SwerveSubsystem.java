@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import org.deceivers.swerve.SwerveDrive;
 import org.deceivers.swerve.SwerveModuleV3;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -15,6 +17,7 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -57,6 +60,13 @@ public class SwerveSubsystem extends SubsystemBase {
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
   
+  // Vision stuff
+  // private final PhotonCamera camera = new PhotonCamera("OV9281");
+  // public static final AprilTagFieldLayout kTagLayout = new AprilTagFieldLayout("2025/championship.json");
+  // private final PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(camera, PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY, kTagLayout, new Pose2d(0, 0, new Rotation2d()));
+
+  //private final PhotonPoseEstimator photonEstimator = new PhotonPoseEstimator(camera, PhotonPoseEstimator.PoseStrategy.AVERAGE_BEST_TARGETS, kTagLayout, new Pose2d(0, 0, new Rotation2d()));
+
   public SwerveSubsystem() {
    gyro.reset();
 

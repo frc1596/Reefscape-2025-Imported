@@ -4,12 +4,17 @@
 
 package frc.robot;
 
+import org.photonvision.PhotonCamera;
+
 //import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.units.measure.Angle;
@@ -57,6 +62,8 @@ public class Robot extends TimedRobot {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   //public static DigitalInput coralSensor = new DigitalInput(7);
 
+int sigma = 0;
+private int m_rainbowFirstPixelHue=0;
 
   XboxController driverController = new XboxController(0);
   CommandXboxController operatorController = new CommandXboxController(1);
@@ -65,7 +72,9 @@ public class Robot extends TimedRobot {
   AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
 
   Limelight limelight = new Limelight();
-
+  PhotonCamera camera = new PhotonCamera("photonvision");
+        public static final Transform3d kRobotToCam =
+                new Transform3d(new Translation3d(0.0, 0.0, 0.5), new Rotation3d(0, 0, 0));
   // PowerDistribution examplePD = new PowerDistribution();
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -110,8 +119,8 @@ Trigger intakeAlgaeIn;
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
-    UsbCamera camera = CameraServer.startAutomaticCapture();
-    camera.setResolution(160, 120);
+    // UsbCamera camera = CameraServer.startAutomaticCapture();
+    // camera.setResolution(160, 120);
     // camera.setFPS(24);
 
   }
@@ -245,6 +254,19 @@ Trigger intakeAlgaeIn;
         } 
       }
 
+
+      // for (int i = 1; i < 96; i += 1) {
+      //   m_ledBuffer.setRGB(i, 0, 0, 0); // grb
+      // } 
+
+// sigma = sigma+1;
+// if(sigma>250){
+// sigma=0;
+// }
+//       for (int i = 1; i < 96; i += 1) {
+//         m_ledBuffer.setRGB(i, sigma, 0, 0); // grb
+//       } 
+      // rainbow();
       m_led.setData(m_ledBuffer);
     }
   }
@@ -311,7 +333,7 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     // coral
 
     
-    bargeScore.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(6)).andThen(intakePivotSubsystem.intakePivot(-2).raceWith(new WaitCommand(0.55)).andThen(intake.runIntakes(-1))));
+    //bargeScore.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(6)).andThen(intakePivotSubsystem.intakePivot(-2).raceWith(new WaitCommand(0.55)).andThen(intake.runIntakes(-1))));
     elevatorLevelFour.whileTrue(elevator.elevatorUp(4).alongWith(intakePivotSubsystem.intakePivot(6.25)));
     elevatorLevelThree.whileTrue(elevator.elevatorUp(3).alongWith(intakePivotSubsystem.intakePivot(5.5)));
     elevatorLevelTwo.whileTrue(elevator.elevatorUp(2).alongWith(intakePivotSubsystem.intakePivot(5.5)));
@@ -336,5 +358,19 @@ Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operat
     intakeAlgaeOut.whileTrue(intake.runIntakes(-0.24));
 
   }
+  private void rainbow() {
+    // For every pixel
+    for (var i = 0; i < m_ledBuffer.getLength()-1; i = i + 1) {
+      // Calculate the hue - hue is easier for rainbows because the color
+      // shape is a circle so only one value needs to precess
+      final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
+      // Set the value
+      m_ledBuffer.setHSV(i, hue, 255, 128);
 
+    }
+    // Increase by to make the rainbow "move"
+    m_rainbowFirstPixelHue += 2;
+    // Check bounds
+    m_rainbowFirstPixelHue %= 180;
+  }
 }
