@@ -79,6 +79,7 @@ public class SwerveDrive {
         for (int i = 0; i < numModules; i++) {
             states[i] = mModules[i].getPosition();
         }
+        
         mSwerveDrivePoseEstimator.update(Rotation2d.fromDegrees(mGyroAngle.getAsDouble()), states);
     }
 

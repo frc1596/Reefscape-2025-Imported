@@ -62,7 +62,6 @@ public class Robot extends TimedRobot {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   //public static DigitalInput coralSensor = new DigitalInput(7);
 
-int sigma = 0;
 private int m_rainbowFirstPixelHue=0;
 
   XboxController driverController = new XboxController(0);
@@ -72,10 +71,7 @@ private int m_rainbowFirstPixelHue=0;
   AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(96);
 
   Limelight limelight = new Limelight();
-  PhotonCamera camera = new PhotonCamera("photonvision");
-        public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.0, 0.0, 0.5), new Rotation3d(0, 0, 0));
-  // PowerDistribution examplePD = new PowerDistribution();
+  PhotonCamera camera = new PhotonCamera("EleCamera");
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
   public static DigitalInput coralSensor = new DigitalInput(7);
@@ -99,6 +95,8 @@ Trigger intakeAlgaeIn;
     NamedCommands.registerCommand("Outtake", intake.runIntakesAuto(0.2));
     NamedCommands.registerCommand("Intake", intake.runIntakesAuto(-0.3));
     NamedCommands.registerCommand("Stop Intake", intake.runIntakes(0));
+
+    NamedCommands.registerCommand("AlignNearestTag", swerve.alignCommand());
 
     NamedCommands.registerCommand("Elevator Down", elevator.elevatorDown().alongWith(intakePivotSubsystem.intakePivot(0)));
     NamedCommands.registerCommand("Elevator L1", elevator.elevatorUp(1).alongWith(intakePivotSubsystem.intakePivot(0)));
@@ -199,7 +197,7 @@ Trigger intakeAlgaeIn;
     
 
     //continuously runs the DriveCommand. If some other command requires the swerve, that one will take priority
-    swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController, limelight));
+    swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController, limelight, camera));
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
@@ -212,10 +210,7 @@ Trigger intakeAlgaeIn;
   public void teleopPeriodic() {
     SmartDashboard.putBoolean("Sensorrobot:", coralSensor.get()); 
 
-    //sets the limelight and drivetrain to algae tracking mode
-    if(intakeAlgaeIn.getAsBoolean() && DriveCommand.algaeTrack == false){
-      DriveCommand.algaeTrack = true;
-    } //to disable the algae tracking, driver needs to hit left bumper
+
 
     //sets the LED color based on which alliance we're on
     var alliance = DriverStation.getAlliance();
@@ -248,10 +243,7 @@ Trigger intakeAlgaeIn;
         for (int i = 1; i < 94; i += 2) {
           m_ledBuffer.setRGB(i, 255, 255, 0); // grb
         } 
-      }else if(DriveCommand.algaeTrack){
-        for (int i = 1; i < 96; i += 1) {
-          m_ledBuffer.setRGB(i, 80, 0, 80); // grb
-        } 
+      }
       }
 
 
@@ -268,7 +260,7 @@ Trigger intakeAlgaeIn;
 //       } 
       // rainbow();
       m_led.setData(m_ledBuffer);
-    }
+    
   }
 
   @Override
@@ -312,7 +304,7 @@ Trigger intakeAlgaeIn;
 
     Trigger humanStation = operatorController.start();
 
-Trigger bargeScore = operatorController.rightStick();
+//Trigger bargeScore = operatorController.rightStick();
 
     // intake and out
     Trigger intakeIn = operatorController.rightBumper().and(operatorController.povLeft().negate());

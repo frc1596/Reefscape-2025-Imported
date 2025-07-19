@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import org.deceivers.drivers.LimelightHelpers;
 import org.deceivers.swerve.SwerveDrive;
 import org.deceivers.swerve.SwerveModuleV3;
 import org.photonvision.PhotonCamera;
@@ -18,6 +19,9 @@ import com.studica.frc.AHRS.NavXComType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -27,6 +31,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -53,13 +59,24 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveModuleV3 Module3 = new SwerveModuleV3(mAzimuth3, mDriveMotor3, new Translation2d(-0.29845, -0.29845), "Module 3", mAzimuthEncoder3);
   private final SwerveModuleV3 Module4 = new SwerveModuleV3(mAzimuth4, mDriveMotor4, new Translation2d(-0.29845,  0.29845), "Module 4", mAzimuthEncoder4);
 
-  private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+  //auto align stuff
+ private PIDController xController = new PIDController(0.3, 0, 0.0); // left right
+  private PIDController yController = new PIDController(0.2, 0.0, 0.0);// forward backward
+  private PIDController autoAimController = new PIDController(0.3, 0, 0.0);
+  private LinearFilter aimFilter = LinearFilter.movingAverage(3);
+  private LinearFilter xFilter2 = LinearFilter.movingAverage(3);
+  private LinearFilter yFilter2 = LinearFilter.movingAverage(3);
+  private SlewRateLimiter xfilter = new SlewRateLimiter(3);
+  private SlewRateLimiter yfilter = new SlewRateLimiter(3);
 
+
+  private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+int limelightlimiter = 0;
   private final SwerveDrive mSwerveDrive = new SwerveDrive(this::getRotation, Module1, Module2, Module3, Module4);
   private SimSwerveModule[] modules;
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
-  
+  private Limelight limelight = new Limelight();
   // Vision stuff
   // private final PhotonCamera camera = new PhotonCamera("OV9281");
   // public static final AprilTagFieldLayout kTagLayout = new AprilTagFieldLayout("2025/championship.json");
@@ -98,8 +115,8 @@ public class SwerveSubsystem extends SubsystemBase {
             mSwerveDrive::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, feedforwards) -> mSwerveDrive.drivePathplanner(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(3.8, 0.0, 0), // Translation PID constants
-                    new PIDConstants(3.5, 0.0, 0) // Rotation PID constants
+                    new PIDConstants(1, 0.0, 0), // Translation PID constants 3.8
+                    new PIDConstants(1, 0.0, 0) // Rotation PID constants 3.5
             ),ppConfig,
             () -> {
               // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -119,7 +136,11 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
    // odometry.update(gyro.getRotation2d(), getPositions());
-   // mSwerveDrive.updateOdometry();
+  //  if((limelightlimiter%500) == 0){
+  //     mSwerveDrive.updatePoseWithVision(limelight.getPose(), limelight.getTimeStamp());
+  //  }
+    //mSwerveDrive.updateOdometry();
+
   //SmartDashboard.putNumber("RobotXSpeed", mSwerveDrive.getChassisSpeeds().vxMetersPerSecond);
   //SmartDashboard.putNumber("RobotYSpeed", mSwerveDrive.getChassisSpeeds().vyMetersPerSecond);
   //SmartDashboard.putNumber("RobotXPos", mSwerveDrive.getPose().getX());
@@ -209,6 +230,9 @@ public class SwerveSubsystem extends SubsystemBase {
     return positions;
   }
 
+
+
+
   /**
    * Basic simulation of a swerve module, will just hold its current state and not use any hardware
    */
@@ -232,5 +256,25 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+    public Command alignCommand(){
+      return this.runEnd(() -> {
+        double yVel = 0;
+        double xVel = 0; 
+        double rotVel = 0;
 
+        if (LimelightHelpers.getTV("limelight")) {
+          yVel = -yController
+          .calculate(xFilter2.calculate(LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getZ()), -0.6); // forward
+                                                                                                                  // backward
+      xVel = xController.calculate(yFilter2.calculate(LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getX()),
+          0.18);
+      rotVel = autoAimController.calculate(
+          aimFilter.calculate(LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getRotation().getY()), 0.08);
+        
+          drive(yfilter.calculate(yVel), xfilter.calculate(xVel), rotVel, true);
+        }
+
+
+      }, () -> Commands.waitSeconds(1));
+    }
 }
