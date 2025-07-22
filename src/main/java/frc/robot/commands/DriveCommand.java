@@ -24,7 +24,7 @@ public class DriveCommand extends Command {
   public CommandXboxController mController2;
   public Limelight mLimelight;
 
-  private PIDController xController = new PIDController(0.3, 0, 0.0); // left right
+  private PIDController xController = new PIDController(0.35, 0, 0.0); // left right
   private PIDController yController = new PIDController(0.2, 0.0, 0.0);// forward backward
   private PIDController autoAimController = new PIDController(0.3, 0, 0.0);
 
@@ -38,6 +38,10 @@ public class DriveCommand extends Command {
 
   private SlewRateLimiter xfilter = new SlewRateLimiter(3);
   private SlewRateLimiter yfilter = new SlewRateLimiter(3);
+
+  public double xVel = 0;
+  public double yVel = 0;
+  public double rotVel = 0;
 
   private boolean lastScan;
   private double driveFactor = 0.85;
@@ -65,9 +69,7 @@ public class DriveCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xVel = 0;
-    double yVel = 0;
-    double rotVel = 0;
+
     double driveDirection = 0;
     double driveMagnitude = 0;
 
@@ -119,10 +121,10 @@ public class DriveCommand extends Command {
     if (mController.getLeftBumper() && LimelightHelpers.getTV("limelight")) {
 
      // LimelightHelpers.setPipelineIndex("limelight", 0);
-      yVel = -yController
+      yVel = yController
           .calculate(xFilter2.calculate(LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getZ()), -0.6); // forward
                                                                                                                   // backward
-      xVel = xController.calculate(yFilter2.calculate(LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getX()),
+      xVel = -xController.calculate(yFilter2.calculate(LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getX()),
           0.18);
       rotVel = autoAimController.calculate(
           aimFilter.calculate(LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getRotation().getY()), 0.08);
@@ -180,6 +182,17 @@ public class DriveCommand extends Command {
   }
 
 
+  // Check if the robot is done moving based on velocity thresholds
+public boolean isDoneMoving (){
+
+  if(mController.getLeftBumper() && Math.abs(xVel) < 0.05 && Math.abs(yVel) < 0.05 && Math.abs(rotVel) < 0.05){
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
 
 
 

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
 import org.photonvision.PhotonCamera;
 
 //import com.kauailabs.navx.frc.AHRS;
@@ -32,6 +34,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -72,6 +75,7 @@ private int m_rainbowFirstPixelHue=0;
 
   Limelight limelight = new Limelight();
   PhotonCamera camera = new PhotonCamera("EleCamera");
+  DriveCommand drivetrain ;
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
   public static DigitalInput coralSensor = new DigitalInput(7);
@@ -197,7 +201,8 @@ Trigger intakeAlgaeIn;
     
 
     //continuously runs the DriveCommand. If some other command requires the swerve, that one will take priority
-    swerve.setDefaultCommand(new DriveCommand(swerve, driverController, operatorController, limelight, camera));
+     drivetrain = new DriveCommand(swerve, driverController, operatorController, limelight, camera);
+    swerve.setDefaultCommand(drivetrain);
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
@@ -320,7 +325,14 @@ Trigger intakeAlgaeIn;
 Trigger algaeGroundIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.a());
 Trigger algaeLevelOneIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.b());
 Trigger algaeLevelTwoIntake = operatorController.povCenter().negate().and(operatorController.povDown().negate()).and(operatorController.x());
-    // +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
+
+//boolean x, b;
+//DriveCommand driveCommandInstance = new DriveCommand(swerve, driverController, operatorController, limelight, camera);
+Trigger test = new Trigger(() -> (drivetrain.isDoneMoving() && elevator.moveInPosistion() && intakePivotSubsystem.moveInPosistion()));
+test.whileTrue(new RunCommand(() -> intake.runIntakes(0.10), intake).andThen(new RunCommand(() -> intake.runIntakes(0.0), intake)));
+
+    //
+// +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=
     // Bindings
     // coral
 

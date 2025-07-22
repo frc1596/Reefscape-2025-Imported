@@ -31,6 +31,7 @@ public class IntakeSubsystem extends SubsystemBase{
         intakeMotor.getConfigurator().apply(intakeConfig, 0.05);
     }
 
+
     public void startIntake(double speed)
     {
         intakeMotor.set(speed);
